@@ -8,37 +8,12 @@ import java.lang.Exception;
 import java.util.List;
 
 
-public class Dao {
+public class ansattDAO {
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
 
-    public Avdeling finnAvdeling(int avdId) {
-        EntityManager em = emf.createEntityManager();
 
-        try {
-            return em.find(Avdeling.class, avdId);
-        } catch (Exception e) {
-//            e.printStackTrace();
-            System.out.println("finnAvdeling() feilet");
-            return null;
-        } finally {
-            em.close();
-        }
-    }
-    public List<Avdeling> finnAvdelinger() {
-        EntityManager em = emf.createEntityManager();
 
-        try {
-            TypedQuery<Avdeling> tq = em.createQuery("SELECT p FROM Avdeling p", Avdeling.class);
-            return tq.getResultList();
-        } catch (Exception e) {
-//            e.printStackTrace();
-            System.out.println("finnAvdelinger() feilet");
-            return null;
-        } finally {
-            em.close();
-        }
-    }
 
     public Ansatt finnAnsatt(int ansId) {
         EntityManager em = emf.createEntityManager();
@@ -67,7 +42,7 @@ public class Dao {
             em.close();
         }
     }
-    public void addAnsatt(Ansatt ansatt, int avdNr){
+    public Ansatt addAnsatt(Ansatt ansatt, int avdNr){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
@@ -77,38 +52,21 @@ public class Dao {
             avd.addAnsatt(ansatt);
             ansatt.setAvdeling(avd);
             tx.commit();
-        }
-        catch (Exception e){
-//            e.printStackTrace();
-            System.out.println("addAnsatt() feilet");
-        }
-        finally {
-            em.close();
-        }
-    }
-    public void addAvdeling(Avdeling avdeling, int sjefId){
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        try {
             tx.begin();
-            Ansatt sjef = em.find(Ansatt.class,sjefId);
-            if (sjef.erSjef())
-                throw new Exception();
-            avdeling.setSjef(sjef);
-            avdeling.addAnsatt(sjef);
-            sjef.setAvdeling(avdeling);
+            ansatt.createUserName();
             tx.commit();
+            return ansatt;
         }
         catch (Exception e){
-            System.out.println("addAvdeling() feilet");
-//            e.printStackTrace();
+            e.printStackTrace();
+            System.out.println("addAnsatt() feilet");
+            return null;
         }
         finally {
             em.close();
         }
     }
-    public void slettAnsatt(int ansattId){
+    public Ansatt slettAnsatt(int ansattId){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
@@ -117,27 +75,33 @@ public class Dao {
             Ansatt ansatt = em.find(Ansatt.class,ansattId);
             em.remove(ansatt);
             tx.commit();
+            return ansatt;
         }
         catch (Exception e){
-            System.out.println("slettAnsatt() feilet");
+            return null;
 //            e.printStackTrace();
         }
         finally {
             em.close();
         }
     }
-    public void slettAvdeling(int avdId){
+    public void flyttAnsatt(int ansattId, int nyAvdId){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
             tx.begin();
-            Avdeling avdeling = em.find(Avdeling.class,avdId);
-            em.remove(avdeling);
+            Ansatt ansatt = em.find(Ansatt.class,ansattId);
+            if (ansatt.erSjef())
+                throw new Exception();
+            Avdeling nyAvd = em.find(Avdeling.class,nyAvdId);
+            ansatt.getAvdeling().getAnsatte().remove(ansatt);
+            nyAvd.getAnsatte().add(ansatt);
+            ansatt.setAvdeling(nyAvd);
             tx.commit();
         }
         catch (Exception e){
-            System.out.println("slettAvdeling() feilet");
+
 //            e.printStackTrace();
         }
         finally {

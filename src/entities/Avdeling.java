@@ -13,34 +13,49 @@ public class Avdeling {
     @Column(name = "avd_id")
     private int avdId;
 
-    @OneToMany(mappedBy = "avdeling",fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "avdeling", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private List<Ansatt> ansatte;
 
     @OneToOne
-    @JoinColumn(name = "sjef_id",referencedColumnName = "ans_id")
+    @JoinColumn(name = "sjef_id", referencedColumnName = "ans_id")
     private Ansatt sjef;
 
-    public Avdeling() {
+    String navn;
+
+    public Avdeling(String navn) {
+        this.navn=navn;
         this.ansatte = new ArrayList<>();
     }
+    public Avdeling(){}
 
-    public void addAnsatt(Ansatt ansatt){
+    public void addAnsatt(Ansatt ansatt) {
         ansatte.add(ansatt);
     }
 
     public void setSjef(Ansatt sjef) {
-        this.sjef=sjef;
+        this.sjef = sjef;
     }
-    public Ansatt getSjef(){
+
+    public Ansatt getSjef() {
         return sjef;
     }
+
+    public String getNavn() {
+        return navn;
+    }
+
+    public List<Ansatt> getAnsatte() {
+        return ansatte;
+    }
+
 
     @Override
     public String toString() {
         return "Avdeling{" +
                 "avdId=" + avdId +
-                ", ansatte=" + ansatte +
-                ", sjef=" + sjef +
+                ", ansatte=" + ansatte.size() +
+                ", sjef=" + sjef.getFornavn() +" "+sjef.getEtternavn()+
+                ", navn='" + navn + '\'' +
                 '}';
     }
 }
