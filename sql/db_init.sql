@@ -11,7 +11,6 @@ CREATE TABLE ansatt
     ans_dato DATE,
     stilling VARCHAR,
     mnd_lonn INT,
-    --prosjekter
     avd_id INT NOT NULL
 );
 CREATE TABLE avdeling
@@ -21,7 +20,24 @@ CREATE TABLE avdeling
     navn VARCHAR,
     FOREIGN KEY(sjef_id) REFERENCES ansatt(ans_id)
 );
-INSERT INTO ansatt(avd_id, user_name) VALUES(1,'init');
+CREATE TABLE prosjekt
+(
+    prosj_id SERIAL PRIMARY KEY,
+    prosj_navn VARCHAR,
+    prosj_beskr VARCHAR
+);
+CREATE TABLE prosjektdeltakelse
+(
+    prosjekt_deltakelse_id SERIAL PRIMARY KEY,
+    ans_id INT,
+    prosj_id INT,
+    rolle VARCHAR,
+    ant_timer INT,
+    FOREIGN KEY(ans_id) REFERENCES ansatt(ans_id),
+    FOREIGN KEY(prosj_id) REFERENCES prosjekt(prosj_id),
+    UNIQUE(prosj_id,ans_id)
+);
+INSERT INTO ansatt(avd_id, user_name, fornavn, etternavn) VALUES(1,'init','dummy','ansatt');
 INSERT INTO avdeling(sjef_id,navn) VALUES(1,'init');
 ALTER TABLE ansatt ADD FOREIGN KEY(avd_id) REFERENCES avdeling(avd_id);
 

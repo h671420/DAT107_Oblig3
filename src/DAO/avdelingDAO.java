@@ -28,7 +28,7 @@ public class avdelingDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Avdeling> tq = em.createQuery("SELECT p FROM Avdeling p", Avdeling.class);
+            TypedQuery<Avdeling> tq = em.createQuery("SELECT a FROM Avdeling a WHERE a.avdId != 1", Avdeling.class);
             return tq.getResultList();
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -45,8 +45,6 @@ public class avdelingDAO {
         try {
             tx.begin();
             Ansatt sjef = em.find(Ansatt.class,sjefId);
-            if (sjef.erSjef())
-                throw new Exception();
             sjef.getAvdeling().getAnsatte().remove(sjef);
             ny.getAnsatte().add(sjef);
             sjef.setAvdeling(ny);
@@ -56,8 +54,8 @@ public class avdelingDAO {
             return ny;
         }
         catch (Exception e){
+            e.printStackTrace();
             return null;
-//            e.printStackTrace();
         }
         finally {
             em.close();

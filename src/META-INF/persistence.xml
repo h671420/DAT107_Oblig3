@@ -5,8 +5,9 @@
 		version="3.0">		
 
 	<persistence-unit name="Oblig_3" transaction-type="RESOURCE_LOCAL">
-	
 
+		<class>entities.Prosjekt</class>
+		<class>entities.ProsjektDeltakelse</class>
         <class>entities.Ansatt</class>
 		<class>entities.Avdeling</class>
         

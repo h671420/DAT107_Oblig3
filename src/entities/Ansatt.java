@@ -3,6 +3,8 @@ package entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +19,8 @@ public class Ansatt {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "avd_id", referencedColumnName = "avd_id")
     private Avdeling avdeling;
+    @OneToMany(mappedBy = "ansatt",cascade = CascadeType.PERSIST)
+    private List<ProsjektDeltakelse> prosjekter=new ArrayList<>();
     @Column(name="user_name")
     private String userName;
     private String fornavn;
@@ -51,7 +55,7 @@ public class Ansatt {
     public String toString() {
         return "Ansatt{" +
                 "ansId=" + ansId +
-                ", avdeling=" + avdeling.getNavn() +
+//                ", avdeling=" + avdeling.getNavn() +
                 ", userName='" + userName + '\'' +
                 ", fornavn='" + fornavn + '\'' +
                 ", etternavn='" + etternavn + '\'' +
@@ -136,5 +140,13 @@ public class Ansatt {
 
     public void setMndLonn(int mndLonn) {
         this.mndLonn = mndLonn;
+    }
+
+    public List<ProsjektDeltakelse> getProsjekter() {
+        return prosjekter;
+    }
+
+    public void setProsjekter(List<ProsjektDeltakelse> prosjekter) {
+        this.prosjekter = prosjekter;
     }
 }

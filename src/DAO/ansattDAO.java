@@ -32,7 +32,7 @@ public class ansattDAO {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Ansatt> tq = em.createQuery("SELECT a FROM Ansatt a", Ansatt.class);
+            TypedQuery<Ansatt> tq = em.createQuery("SELECT a FROM Ansatt a WHERE a.ansId != 1", Ansatt.class);
             return tq.getResultList();
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -49,6 +49,7 @@ public class ansattDAO {
         try {
             tx.begin();
             Avdeling avd = em.find(Avdeling.class,avdNr);
+            System.out.println(avdNr);
             avd.addAnsatt(ansatt);
             ansatt.setAvdeling(avd);
             tx.commit();
@@ -66,38 +67,38 @@ public class ansattDAO {
             em.close();
         }
     }
-    public Ansatt slettAnsatt(int ansattId){
+    public boolean slettAnsatt(int ansId){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansattId);
+            Ansatt ansatt = em.find(Ansatt.class,ansId);
             em.remove(ansatt);
             tx.commit();
-            return ansatt;
+            return true;
         }
         catch (Exception e){
-            return null;
-//            e.printStackTrace();
+            e.printStackTrace();
+            return false;
         }
         finally {
             em.close();
         }
     }
-    public void flyttAnsatt(int ansattId, int nyAvdId){
+    public void flyttAnsatt(int ansId, int avdId){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansattId);
+            Ansatt ansatt = em.find(Ansatt.class,ansId);
             if (ansatt.erSjef())
-                throw new Exception();
-            Avdeling nyAvd = em.find(Avdeling.class,nyAvdId);
+                throw new Exception("er sjef, kan ikke flyttes");
+            Avdeling avdeling = em.find(Avdeling.class,avdId);
             ansatt.getAvdeling().getAnsatte().remove(ansatt);
-            nyAvd.getAnsatte().add(ansatt);
-            ansatt.setAvdeling(nyAvd);
+            avdeling.getAnsatte().add(ansatt);
+            ansatt.setAvdeling(avdeling);
             tx.commit();
         }
         catch (Exception e){
