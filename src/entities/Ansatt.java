@@ -29,7 +29,7 @@ public class Ansatt {
     private LocalDate ansDato;
     private String stilling;
     @Column(name="mnd_lonn")
-    int mndLonn;
+    Integer mndLønn;
 
 
     public boolean erSjef(){
@@ -61,7 +61,7 @@ public class Ansatt {
                 ", etternavn='" + etternavn + '\'' +
                 ", ansDato=" + ansDato +
                 ", stilling='" + stilling + '\'' +
-                ", mndLonn=" + mndLonn +
+                ", mndLonn=" + mndLønn +
                 '}';
     }
 
@@ -134,12 +134,12 @@ public class Ansatt {
         this.stilling = stilling;
     }
 
-    public int getMndLonn() {
-        return mndLonn;
+    public Integer getMndLønn() {
+        return mndLønn;
     }
 
-    public void setMndLonn(int mndLonn) {
-        this.mndLonn = mndLonn;
+    public void setMndLønn(int mndLonn) {
+        this.mndLønn = mndLonn;
     }
 
     public List<ProsjektDeltakelse> getProsjekter() {

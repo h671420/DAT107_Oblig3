@@ -1,7 +1,6 @@
 package DAO;
 
 import entities.Prosjekt;
-import entities.ProsjektDeltakelse;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
 public class prosjektDAO {
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
-    public void createProsjekt(Prosjekt prosjekt){
+    public void addProsjekt(Prosjekt prosjekt){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 

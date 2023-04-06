@@ -5,6 +5,7 @@ import entities.Avdeling;
 import jakarta.persistence.*;
 
 import java.lang.Exception;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -25,6 +26,93 @@ public class ansattDAO {
             System.out.println("finnAnsatt() feilet");
             return null;
         } finally {
+            em.close();
+        }
+    }
+    public void endreFornavn(int ansId, String fornavn){
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try{
+            tx.begin();
+            Ansatt ansatt = em.find(Ansatt.class,ansId);
+            ansatt.setFornavn(fornavn);
+            ansatt.createUserName();
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            em.close();
+        }
+    }
+    public void endreEtternavn(int ansId, String etternavn){
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try{
+            tx.begin();
+            Ansatt ansatt = em.find(Ansatt.class,ansId);
+            ansatt.setEtternavn(etternavn);
+            ansatt.createUserName();
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            em.close();
+        }
+    }
+    public void endreStilling(int ansId, String stilling){
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try{
+            tx.begin();
+            Ansatt ansatt = em.find(Ansatt.class,ansId);
+            ansatt.setStilling(stilling);
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            em.close();
+        }
+    }
+    public void endreAnsettelsesDato(int ansId, LocalDate nydato){
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try{
+            tx.begin();
+            Ansatt ansatt = em.find(Ansatt.class,ansId);
+            ansatt.setAnsDato(nydato);
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            em.close();
+        }
+    }
+    public void endreMånedsLønn(int ansId, Integer lønn){
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try{
+            tx.begin();
+            Ansatt ansatt = em.find(Ansatt.class,ansId);
+            ansatt.setMndLønn(lønn);
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
             em.close();
         }
     }

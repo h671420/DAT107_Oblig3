@@ -24,6 +24,7 @@ public class prosjektDeltakelseDAO {
             em.close();
         }
     }
+
     public List<ProsjektDeltakelse> finnProsjektDeltakelser(){
             EntityManager em = emf.createEntityManager();
 
@@ -39,7 +40,7 @@ public class prosjektDeltakelseDAO {
                 em.close();
             }
         }
-        public void createProsjektDeltakelse(int ansId, int prosjId, String rolle, int timer){
+        public void addProsjektDeltakelse(int ansId, int prosjId, String rolle, int timer){
             EntityManager em = emf.createEntityManager();
             EntityTransaction tx = em.getTransaction();
             try{

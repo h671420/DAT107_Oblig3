@@ -35,8 +35,8 @@ public class Main {
     }
 
     private static void registrerNoenProsjektDeltakelser() {
-        prosjektDeltakelseDAO.createProsjektDeltakelse(2, 1, "prosjektsjef", 3);
-        prosjektDeltakelseDAO.createProsjektDeltakelse(3, 2, "kaffehenter", 3);
+        prosjektDeltakelseDAO.addProsjektDeltakelse(2, 1, "prosjektsjef", 3);
+        prosjektDeltakelseDAO.addProsjektDeltakelse(3, 2, "kaffehenter", 3);
 //        prosjektDeltakelseDAO.createProsjektDeltakelse(4, 3, "medarbeider", 3);
     }
 
@@ -47,9 +47,9 @@ public class Main {
 //        ansattDAO.flyttAnsatt(4,3);
 //        ansattDAO.flyttAnsatt(6,2);
 //        ansattDAO.flyttAnsatt(7,2);
-        prosjektDAO.createProsjekt(pro);
-        prosjektDAO.createProsjekt(pro2);
-        prosjektDAO.createProsjekt(pro3);
+        prosjektDAO.addProsjekt(pro);
+        prosjektDAO.addProsjekt(pro2);
+        prosjektDAO.addProsjekt(pro3);
     }
 
     private static void leggTilNoenAvdelinger() {
