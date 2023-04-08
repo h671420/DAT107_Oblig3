@@ -1,6 +1,7 @@
 package entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +9,11 @@ import java.util.Objects;
 
 @Entity
 @Table(schema ="Oblig_3")
-public class Prosjekt {
+public class Prosjekt implements asd {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prosj_id")
-    private int prosjId;
+    private int id;
     @Column(name = "prosj_navn")
     private String navn;
     @Column(name = "prosj_beskr")
@@ -36,7 +37,7 @@ public class Prosjekt {
     @Override
     public String toString() {
         return "Prosjekt{" +
-                "prosjId=" + prosjId +
+                "prosjId=" + id +
                 ", navn='" + navn + '\'' +
                 ", beskrivelse='" + beskrivelse + '\'' +
                 '}';
@@ -47,15 +48,23 @@ public class Prosjekt {
     public void setDeltakelser(List<ProsjektDeltakelse> deltakelser) {
         this.deltakelser = deltakelser;
     }
-    public int getProsjId() {
-        return prosjId;
+    @Override
+    public Integer getId() {
+        return id;
     }
-    public void setProsjId(int prosjId) {
-        this.prosjId = prosjId;
+    public void setId(int prosjId) {
+        this.id = prosjId;
     }
+    @Override
     public String getNavn() {
         return navn;
     }
+
+    @Override
+    public String getEntId() {
+        return "p"+id;
+    }
+
     public void setNavn(String navn) {
         this.navn = navn;
     }
@@ -65,11 +74,14 @@ public class Prosjekt {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Prosjekt prosjekt = (Prosjekt) o;
-        return prosjId == prosjekt.prosjId;
+        return id == prosjekt.id;
+    }
+    public String info(){
+        return "ProsjekdId p"+ getId()+", Navn: "+getNavn()+", Beskrivelse: "+getBeskrivelse()+", Antall Medlemmer: "+getDeltakelser().size();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(prosjId, navn, beskrivelse, deltakelser);
+        return Objects.hash(id, navn, beskrivelse, deltakelser);
     }
 }

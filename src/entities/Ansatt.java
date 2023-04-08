@@ -1,6 +1,7 @@
 package entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,12 +10,12 @@ import java.util.Objects;
 
 @Entity
 @Table(schema = "Oblig_3")
-public class Ansatt {
+public class Ansatt implements asd{
 
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ans_id")
-    private int ansId;
+    private int id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "avd_id", referencedColumnName = "avd_id")
@@ -33,7 +34,7 @@ public class Ansatt {
 
 
     public boolean erSjef(){
-        if (avdeling.getSjef().equals(this))
+        if (avdeling!=null&&avdeling.getSjef().equals(this))
             return true;
         return false;
     }
@@ -43,18 +44,18 @@ public class Ansatt {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ansatt ansatt = (Ansatt) o;
-        return ansId == ansatt.ansId && Objects.equals(avdeling, ansatt.avdeling);
+        return id == ansatt.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ansId, avdeling);
+        return Objects.hash(id, avdeling);
     }
 
     @Override
     public String toString() {
         return "Ansatt{" +
-                "ansId=" + ansId +
+                "ansId=" + id +
 //                ", avdeling=" + avdeling.getNavn() +
                 ", userName='" + userName + '\'' +
                 ", fornavn='" + fornavn + '\'' +
@@ -75,15 +76,11 @@ public class Ansatt {
     }
 
     public void createUserName() {
-        userName= ""+fornavn.toLowerCase().charAt(0)+etternavn.toLowerCase().charAt(0)+ansId;
+        userName= ""+fornavn.toLowerCase().charAt(0)+etternavn.toLowerCase().charAt(0)+ id;
     }
 
-    public int getAnsId() {
-        return ansId;
-    }
-
-    public void setAnsId(int ansId) {
-        this.ansId = ansId;
+    public void setId(int ansId) {
+        this.id = ansId;
     }
 
     public Avdeling getAvdeling() {
@@ -94,7 +91,7 @@ public class Ansatt {
         this.avdeling = avdeling;
     }
 
-    public String getUserName() {
+    public String getBrukernavn() {
         return userName;
     }
 
@@ -134,11 +131,11 @@ public class Ansatt {
         this.stilling = stilling;
     }
 
-    public Integer getMndLønn() {
+    public Integer getMndLonn() {
         return mndLønn;
     }
 
-    public void setMndLønn(int mndLonn) {
+    public void setMndLonn(int mndLonn) {
         this.mndLønn = mndLonn;
     }
 
@@ -148,5 +145,29 @@ public class Ansatt {
 
     public void setProsjekter(List<ProsjektDeltakelse> prosjekter) {
         this.prosjekter = prosjekter;
+    }
+
+    public String info() {
+        String erSjef="";
+        if (erSjef())
+            erSjef="(leder)";
+        String avdId ="";
+        if (getAvdeling().getId()!=1)
+            avdId ="(Id:a"+getAvdeling().getId()+")";
+        return "\tId: "+getEntId()+", Navn: "+getNavn()+", Stilling: "+getStilling()+", Avdeling"+erSjef+": "+getAvdeling().getNavn()+avdId+", #Prosjektdeltakelser: "+getProsjekter().size()
+                +"\n\t\tMånedslønn: "+ getMndLonn()+", Ansettelsesdato: "+getAnsDato();
+    }
+    @Override
+    public String getNavn(){
+        return fornavn+" "+etternavn;
+    }
+
+    @Override
+    public String getEntId() {
+        return "a"+ id;
+    }
+    @Override
+    public Integer getId(){
+        return id;
     }
 }

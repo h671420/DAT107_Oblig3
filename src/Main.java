@@ -1,7 +1,7 @@
-import DAO.ansattDAO;
-import DAO.avdelingDAO;
-import DAO.prosjektDAO;
-import DAO.prosjektDeltakelseDAO;
+import DAO.AnsattDAO;
+import DAO.AvdelingDAO;
+import DAO.ProsjektDAO;
+import DAO.ProsjektDeltakelseDAO;
 import entities.Ansatt;
 import entities.Avdeling;
 import entities.Prosjekt;
@@ -10,10 +10,10 @@ import entities.ProsjektDeltakelse;
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
-    static ansattDAO ansattDAO = new ansattDAO();
-    static avdelingDAO avdelingDAO = new avdelingDAO();
-    static prosjektDAO prosjektDAO = new prosjektDAO();
-    static prosjektDeltakelseDAO prosjektDeltakelseDAO = new prosjektDeltakelseDAO();
+    static AnsattDAO ansattDAO = new AnsattDAO();
+    static AvdelingDAO avdelingDAO = new AvdelingDAO();
+    static ProsjektDAO prosjektDAO = new ProsjektDAO();
+    static ProsjektDeltakelseDAO prosjektDeltakelseDAO = new ProsjektDeltakelseDAO();
 
     public static void main(String[] args) {
 //            leggTilNoenAnsatte();
@@ -28,9 +28,9 @@ public class Main {
 //        visProsjekter();
 //        visProsjektDeltakelser();
 
-        ansattDAO.slettAnsatt(10);
-        System.out.println(ansattDAO.finnAnsatt(10));
-
+//        ansattDAO.slettAnsatt(10);
+//        System.out.println(ansattDAO.finnAnsatt(10));
+        System.out.println(prosjektDeltakelseDAO.finnProsjektDeltakelse(4));
 
     }
 
@@ -75,25 +75,25 @@ public class Main {
 
     private static void visAvdelinger() {
         System.out.println("Databasens avdelinger");
-        for (Avdeling a : avdelingDAO.finnAvdelinger())
+        for (Avdeling a : avdelingDAO.finnAlle())
             System.out.println("\t" + a);
     }
 
     private static void visAnsatte() {
         System.out.println("Databasens ansatte");
-        for (Ansatt a : ansattDAO.finnAnsatte())
+        for (Ansatt a : ansattDAO.finnAlle())
             System.out.println("\t" + a);
     }
 
     private static void visProsjekter() {
         System.out.println("Databasens Prosjekter");
-        for (Prosjekt p : prosjektDAO.finnProsjekter())
+        for (Prosjekt p : prosjektDAO.finnAlle())
             System.out.println("\t" + p);
     }
 
     private static void visProsjektDeltakelser() {
         System.out.println("Databasens ProsjektDeltakelser");
-        for (ProsjektDeltakelse pd : prosjektDeltakelseDAO.finnProsjektDeltakelser())
+        for (ProsjektDeltakelse pd : prosjektDeltakelseDAO.finnAlle())
             System.out.println("\t" + pd);
     }
 }

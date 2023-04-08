@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 
-public class ansattDAO {
+public class AnsattDAO implements Dao{
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
 
@@ -26,6 +26,20 @@ public class ansattDAO {
             System.out.println("finnAnsatt() feilet");
             return null;
         } finally {
+            em.close();
+        }
+    }
+    public List<Ansatt> finnAnsatteIkkeSjef(){
+        EntityManager em = emf.createEntityManager();
+        try{
+            TypedQuery<Ansatt> tq = em.createQuery("SELECT ansatte FROM Ansatt ansatte WHERE ansatte.id NOT IN (SELECT avdelinger.sjef.id from Avdeling avdelinger )", Ansatt.class);
+            return tq.getResultList();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        finally {
             em.close();
         }
     }
@@ -99,14 +113,14 @@ public class ansattDAO {
             em.close();
         }
     }
-    public void endreMånedsLønn(int ansId, Integer lønn){
+    public void endreMaanedsLonn(int ansId, Integer lønn){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try{
             tx.begin();
             Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setMndLønn(lønn);
+            ansatt.setMndLonn(lønn);
             tx.commit();
         }
         catch(Exception e){
@@ -116,11 +130,11 @@ public class ansattDAO {
             em.close();
         }
     }
-    public List<Ansatt> finnAnsatte() {
+    public List<Ansatt> finnAlle() {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Ansatt> tq = em.createQuery("SELECT a FROM Ansatt a WHERE a.ansId != 1", Ansatt.class);
+            TypedQuery<Ansatt> tq = em.createQuery("SELECT a FROM Ansatt a WHERE a.id != 1", Ansatt.class);
             return tq.getResultList();
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -155,7 +169,7 @@ public class ansattDAO {
             em.close();
         }
     }
-    public boolean slettAnsatt(int ansId){
+    public boolean slettAnsatt(int ansId) throws RollbackException{
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
@@ -166,10 +180,10 @@ public class ansattDAO {
             tx.commit();
             return true;
         }
-        catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
+//        catch (Exception e){
+//            System.out.println(e.getCause().getCause().getClass()) ;
+//            return false;
+//        }
         finally {
             em.close();
         }

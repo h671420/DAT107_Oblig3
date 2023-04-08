@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-public class prosjektDeltakelseDAO {
+public class ProsjektDeltakelseDAO implements Dao{
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
     public ProsjektDeltakelse finnProsjektDeltakelse(int deltId){
@@ -25,7 +25,7 @@ public class prosjektDeltakelseDAO {
         }
     }
 
-    public List<ProsjektDeltakelse> finnProsjektDeltakelser(){
+    public List<ProsjektDeltakelse> finnAlle(){
             EntityManager em = emf.createEntityManager();
 
             try{
@@ -60,4 +60,56 @@ public class prosjektDeltakelseDAO {
                 em.close();
             }
         }
+
+    public void slett(Integer prosjektDeltakelseId) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try{
+            tx.begin();
+            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
+            pd.getAnsatt().getProsjekter().remove(pd);
+            em.remove(pd);
+            tx.commit();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            em.close();
+        }
+    }
+
+    public void endreRolle(Integer prosjektDeltakelseId, String nyRolle) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try{
+            tx.begin();
+            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
+            pd.setRolle(nyRolle);
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            em.close();
+        }
+    }
+
+    public void endreTimer(Integer prosjektDeltakelseId, Integer nyTimer) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try{
+            tx.begin();
+            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
+            pd.setTimer(nyTimer);
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            em.close();
+        }
+    }
 }

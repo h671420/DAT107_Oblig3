@@ -18,7 +18,7 @@
 			<property name="jakarta.persistence.jdbc.password" value="pass" />
 
 			<!-- Se https://wiki.eclipse.org/EclipseLink/Examples/JPA/Logging -->
-			<property name="eclipselink.logging.level" value="WARNING" />
+			<property name="eclipselink.logging.level" value="SEVERE" />
         </properties>
 	</persistence-unit>
 </persistence> 

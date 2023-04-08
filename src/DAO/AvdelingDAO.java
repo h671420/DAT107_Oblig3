@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 
-public class avdelingDAO {
+public class AvdelingDAO implements Dao{
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
 
@@ -24,11 +24,11 @@ public class avdelingDAO {
             em.close();
         }
     }
-    public List<Avdeling> finnAvdelinger() {
+    public List<Avdeling> finnAlle() {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Avdeling> tq = em.createQuery("SELECT a FROM Avdeling a WHERE a.avdId != 1", Avdeling.class);
+            TypedQuery<Avdeling> tq = em.createQuery("SELECT a FROM Avdeling a WHERE a.id != 1", Avdeling.class);
             return tq.getResultList();
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -79,6 +79,42 @@ public class avdelingDAO {
         catch (Exception e){
             e.printStackTrace();
             return null;
+        }
+        finally {
+            em.close();
+        }
+    }
+    public void endreNavn(int avdId, String navn){
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try{
+            tx.begin();
+            Avdeling avdeling=em.find(Avdeling.class,avdId);
+            avdeling.setNavn(navn);
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            em.close();
+        }
+    }
+    public void endreSjef(int avdId, int nySjefId){
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try{
+            tx.begin();
+            Avdeling avdeling=em.find(Avdeling.class,avdId);
+            Ansatt nySjef = em.find(Ansatt.class,nySjefId);
+            nySjef.getAvdeling().getAnsatte().remove(nySjef);
+            avdeling.getAnsatte().add(nySjef);
+            avdeling.setSjef(nySjef);
+            nySjef.setAvdeling(avdeling);
+            tx.commit();
+        }
+        catch(Exception e){
+            e.printStackTrace();
         }
         finally {
             em.close();
