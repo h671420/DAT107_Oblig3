@@ -8,8 +8,13 @@
 
 		<class>entities.Prosjekt</class>
 		<class>entities.ProsjektDeltakelse</class>
-        <class>entities.Ansatt</class>
+		<class>entities.Ansatt</class>
 		<class>entities.Avdeling</class>
+		<class>tekstgrensesnitt.grensesnittentiteter.ProsjektGrensesnitt</class>
+		<class>tekstgrensesnitt.grensesnittentiteter.ProsjektDeltakelseGrensesnitt</class>
+        <class>tekstgrensesnitt.grensesnittentiteter.AnsattGrensesnitt</class>
+		<class>tekstgrensesnitt.grensesnittentiteter.AvdelingGrensesnitt</class>
+		<class>tekstgrensesnitt.grensesnittentiteter.asd</class>
         
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />

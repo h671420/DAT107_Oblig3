@@ -1,7 +1,8 @@
 package DAO;
 
 import entities.Ansatt;
-import entities.Avdeling;
+import tekstgrensesnitt.grensesnittentiteter.AnsattGrensesnitt;
+import tekstgrensesnitt.grensesnittentiteter.AvdelingGrensesnitt;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -11,11 +12,11 @@ public class AvdelingDAO implements Dao{
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
 
-    public Avdeling finnAvdeling(int avdId) {
+    public AvdelingGrensesnitt finnAvdeling(int avdId) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            return em.find(Avdeling.class, avdId);
+            return em.find(AvdelingGrensesnitt.class, avdId);
         } catch (Exception e) {
 //            e.printStackTrace();
             System.out.println("finnAvdeling() feilet");
@@ -24,11 +25,11 @@ public class AvdelingDAO implements Dao{
             em.close();
         }
     }
-    public List<Avdeling> finnAlle() {
+    public List<AvdelingGrensesnitt> finnAlle() {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Avdeling> tq = em.createQuery("SELECT a FROM Avdeling a WHERE a.id != 1", Avdeling.class);
+            TypedQuery<AvdelingGrensesnitt> tq = em.createQuery("SELECT a FROM AvdelingGrensesnitt a WHERE a.id != 1", AvdelingGrensesnitt.class);
             return tq.getResultList();
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -38,13 +39,13 @@ public class AvdelingDAO implements Dao{
             em.close();
         }
     }
-    public Avdeling addAvdeling(Avdeling ny, int sjefId){
+    public AvdelingGrensesnitt addAvdeling(AvdelingGrensesnitt ny, int sjefId){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
             tx.begin();
-            Ansatt sjef = em.find(Ansatt.class,sjefId);
+            AnsattGrensesnitt sjef = em.find(AnsattGrensesnitt.class,sjefId);
             sjef.getAvdeling().getAnsatte().remove(sjef);
             ny.getAnsatte().add(sjef);
             sjef.setAvdeling(ny);
@@ -61,20 +62,20 @@ public class AvdelingDAO implements Dao{
             em.close();
         }
     }
-    public Avdeling slettAvdeling(int avdId){
+    public AvdelingGrensesnitt slettAvdeling(int avdId){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
             tx.begin();
-            Avdeling avdeling = em.find(Avdeling.class,avdId);
-            Avdeling init = em.find(Avdeling.class,1);
-            List<Ansatt> ansatte = avdeling.getAnsatte();
+            AvdelingGrensesnitt avdelingGrensesnitt = em.find(AvdelingGrensesnitt.class,avdId);
+            AvdelingGrensesnitt init = em.find(AvdelingGrensesnitt.class,1);
+            List<AnsattGrensesnitt> ansatte = avdelingGrensesnitt.getAnsatte();
             for (Ansatt a:ansatte)
                 a.setAvdeling(init);
-            em.remove(avdeling);
+            em.remove(avdelingGrensesnitt);
             tx.commit();
-            return avdeling;
+            return avdelingGrensesnitt;
         }
         catch (Exception e){
             e.printStackTrace();
@@ -89,8 +90,8 @@ public class AvdelingDAO implements Dao{
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            Avdeling avdeling=em.find(Avdeling.class,avdId);
-            avdeling.setNavn(navn);
+            AvdelingGrensesnitt avdelingGrensesnitt =em.find(AvdelingGrensesnitt.class,avdId);
+            avdelingGrensesnitt.setAvdelingsNavn(navn);
             tx.commit();
         }
         catch(Exception e){
@@ -105,12 +106,12 @@ public class AvdelingDAO implements Dao{
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            Avdeling avdeling=em.find(Avdeling.class,avdId);
-            Ansatt nySjef = em.find(Ansatt.class,nySjefId);
+            AvdelingGrensesnitt avdelingGrensesnitt =em.find(AvdelingGrensesnitt.class,avdId);
+            AnsattGrensesnitt nySjef = em.find(AnsattGrensesnitt.class,nySjefId);
             nySjef.getAvdeling().getAnsatte().remove(nySjef);
-            avdeling.getAnsatte().add(nySjef);
-            avdeling.setSjef(nySjef);
-            nySjef.setAvdeling(avdeling);
+            avdelingGrensesnitt.getAnsatte().add(nySjef);
+            avdelingGrensesnitt.setSjef(nySjef);
+            nySjef.setAvdeling(avdelingGrensesnitt);
             tx.commit();
         }
         catch(Exception e){

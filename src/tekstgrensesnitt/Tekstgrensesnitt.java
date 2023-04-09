@@ -1,8 +1,8 @@
 package tekstgrensesnitt;
 
 import DAO.*;
-import entities.*;
 import jakarta.persistence.RollbackException;
+import tekstgrensesnitt.grensesnittentiteter.*;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -31,13 +31,13 @@ public class Tekstgrensesnitt {
             String input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    entiteterMeny(Ansatt.class);
+                    entiteterMeny(AnsattGrensesnitt.class);
                     break;
                 case "2":
-                    entiteterMeny(Avdeling.class);
+                    entiteterMeny(AvdelingGrensesnitt.class);
                     break;
                 case "3":
-                    entiteterMeny(Prosjekt.class);
+                    entiteterMeny(ProsjektGrensesnitt.class);
                     break;
                 case "4":
                     System.out.println("Ha en fortsatt fin dag");
@@ -60,22 +60,22 @@ public class Tekstgrensesnitt {
         Runnable leggTil = null;
         Consumer<Integer> administrer = null;
         switch (entitetsKlasse.getSimpleName()) {
-            case "Ansatt":
+            case "AnsattGrensesnitt":
                 dao = new AnsattDAO();
                 leggTil = this::leggTilAnsattRutine;
                 administrer = this::administrerAnsattMeny;
                 break;
-            case "Avdeling":
+            case "AvdelingGrensesnitt":
                 dao = new AvdelingDAO();
                 leggTil = this::leggTilAvdelingRutine;
                 administrer = this::administrerAvdelingMeny;
                 break;
-            case "Prosjekt":
+            case "ProsjektGrensesnitt":
                 dao = new ProsjektDAO();
                 leggTil = this::leggTilProsjektRutine;
                 administrer = this::administrerProsjektMeny;
                 break;
-            case "ProsjektDeltakelse":
+            case "ProsjektDeltakelseGrensesnitt":
                 dao = new ProsjektDeltakelseDAO();
                 break;
         }
@@ -192,8 +192,8 @@ public class Tekstgrensesnitt {
     private void administrerAnsattMeny(int ansId) {
         boolean running = true;
         while (running) {
-            Ansatt ansatt = ansDAO.finnAnsatt(ansId);
-            visAdministrerAnsattMeny(ansatt);
+            AnsattGrensesnitt ansattGrensesnitt = ansDAO.finnAnsatt(ansId);
+            visAdministrerAnsattMeny(ansattGrensesnitt);
             String input = scanner.nextLine();
             switch (input) {
                 case "1":
@@ -215,21 +215,21 @@ public class Tekstgrensesnitt {
 
                     break;
                 case "3":
-                    if (ansatt.erSjef()) {
-                        System.out.println(ansatt.getFornavn() + " " + ansatt.getEtternavn() + " er sjef for avdeling " + ansatt.getAvdeling().getNavn() + ", og kan derfor ikke bytte avdeling.");
+                    if (ansattGrensesnitt.erSjef()) {
+                        System.out.println(ansattGrensesnitt.getFornavn() + " " + ansattGrensesnitt.getEtternavn() + " er sjef for avdeling " + ansattGrensesnitt.getAvdeling().getAvdelingsNavn() + ", og kan derfor ikke bytte avdeling.");
                         scanner.nextLine();
                         break;
                     }
 //                    Avdeling avdeling = velgAvdelingRutine(avdDAO.finnAlle()); //TODO: lage en daometode som returnere avdelinger bortsett fra den som den ansatte allerede er tilknyttet
-                    Avdeling avdeling = velgEntitet(avdDAO.finnAlle(), Avdeling.class);
-                    if (avdeling != null)
-                        ansDAO.flyttAnsatt(ansId, avdeling.getId()); //TODO: legge inn logikk slik at vi ikke forsøker å flytte på en sjef
+                    AvdelingGrensesnitt avdelingGrensesnitt = velgEntitet(avdDAO.finnAlle(), AvdelingGrensesnitt.class);
+                    if (avdelingGrensesnitt != null)
+                        ansDAO.flyttAnsatt(ansId, avdelingGrensesnitt.getAvdId()); //TODO: legge inn logikk slik at vi ikke forsøker å flytte på en sjef
                     break;
                 case "4":
-                    administrerProsjektTilknyttingerMeny(ansatt.getId(), null);
+                    administrerProsjektTilknyttingerMeny(ansattGrensesnitt.getAnsId(), null);
                     break;
                 case "5":
-                    administrerAnsattDetaljerMeny(ansatt.getId());
+                    administrerAnsattDetaljerMeny(ansattGrensesnitt.getAnsId());
                     break;
             }
         }
@@ -238,8 +238,8 @@ public class Tekstgrensesnitt {
     private void administrerAnsattDetaljerMeny(int ansId) {
         boolean running = true;
         while (running) {
-            Ansatt ansatt = ansDAO.finnAnsatt(ansId);
-            visAdministrerAnsattDetaljerMeny(ansatt);
+            AnsattGrensesnitt ansattGrensesnitt = ansDAO.finnAnsatt(ansId);
+            visAdministrerAnsattDetaljerMeny(ansattGrensesnitt);
             String input = scanner.nextLine();
             switch (input) {
                 case "1":
@@ -248,7 +248,7 @@ public class Tekstgrensesnitt {
                 case "2":
                     String fornavn = Statics.getStringInput(2, "et", "fornavn", true);
                     if (fornavn != null)
-                        ansDAO.endreFornavn(ansatt.getId(), fornavn);
+                        ansDAO.endreFornavn(ansattGrensesnitt.getAnsId(), fornavn);
                     break;
                 case "3":
                     String etternavn = Statics.getStringInput(2, "et", "etternavn", true);
@@ -257,17 +257,17 @@ public class Tekstgrensesnitt {
 //                            "er ikke ett gyldig etternavn",
 //                            true);
                     if (etternavn != null)
-                        ansDAO.endreEtternavn(ansatt.getId(), etternavn);
+                        ansDAO.endreEtternavn(ansattGrensesnitt.getAnsId(), etternavn);
                     break;
                 case "4":
                     LocalDate nydato = Statics.getDateInput("en ny ansettelsesdato");
                     if (nydato != null)
-                        ansDAO.endreAnsettelsesDato(ansatt.getId(), nydato);
+                        ansDAO.endreAnsettelsesDato(ansattGrensesnitt.getAnsId(), nydato);
                     break;
                 case "5":
                     Integer nylonn = Statics.getIntegerInput("en", "månedslønn");
                     if (nylonn != null)
-                        ansDAO.endreMaanedsLonn(ansatt.getId(), nylonn);
+                        ansDAO.endreMaanedsLonn(ansattGrensesnitt.getAnsId(), nylonn);
                     break;
                 case "6":
                     String stilling = Statics.getStringInput(4, "en", "stilling", true);
@@ -276,7 +276,7 @@ public class Tekstgrensesnitt {
 //                            "er ikke en gyldig stillingsbeskrivelse",
 //                            false);
                     if (stilling != null)
-                        ansDAO.endreStilling(ansatt.getId(), stilling);
+                        ansDAO.endreStilling(ansattGrensesnitt.getAnsId(), stilling);
                     break;
 
             }
@@ -287,8 +287,8 @@ public class Tekstgrensesnitt {
     private void administrerAvdelingMeny(int avdId) {
         boolean running = true;
         while (running) {
-            Avdeling avdeling = avdDAO.finnAvdeling(avdId);
-            visAdministrerAvdelingMeny(avdeling);
+            AvdelingGrensesnitt avdelingGrensesnitt = avdDAO.finnAvdeling(avdId);
+            visAdministrerAvdelingMeny(avdelingGrensesnitt);
             String input = scanner.nextLine();
             switch (input) {
                 case "1":
@@ -310,15 +310,15 @@ public class Tekstgrensesnitt {
                     break;
                 case "4":
 //                    Ansatt nySjef = velgAnsattRutine(ansDAO.finnAnsatteIkkeSjef());
-                    Ansatt nySjef = velgEntitet(ansDAO.finnAnsatteIkkeSjef(), Ansatt.class);
+                    AnsattGrensesnitt nySjef = velgEntitet(ansDAO.finnAnsatteIkkeSjef(), AnsattGrensesnitt.class);
                     if (nySjef != null)
-                        avdDAO.endreSjef(avdId, nySjef.getId());
+                        avdDAO.endreSjef(avdId, nySjef.getAnsId());
                     break;
                 case "5":
-                    List<Ansatt> kandidatAnsatte = avdeling.getAnsatte();
-                    kandidatAnsatte.remove(avdeling.getSjef());
-                    List<Avdeling> kandidatAvdelinger = avdDAO.finnAlle();
-                    kandidatAvdelinger.remove(avdeling);
+                    List<AnsattGrensesnitt> kandidatAnsatte = avdelingGrensesnitt.getAnsatte();
+                    kandidatAnsatte.remove(avdelingGrensesnitt.getSjef());
+                    List<AvdelingGrensesnitt> kandidatAvdelinger = avdDAO.finnAlle();
+                    kandidatAvdelinger.remove(avdelingGrensesnitt);
                     if (kandidatAnsatte.isEmpty()) {
                         System.out.println("Avdelingen har ingen ansatte som kan omplasseres");
                         break;
@@ -328,11 +328,11 @@ public class Tekstgrensesnitt {
                         break;
                     }
 //                    Ansatt ansatt = velgAnsattRutine(kandidatAnsatte);
-                    Ansatt ansatt = velgEntitet(kandidatAnsatte, Ansatt.class);
+                    AnsattGrensesnitt ansattGrensesnitt = velgEntitet(kandidatAnsatte, AnsattGrensesnitt.class);
 //                    Avdeling nyAvdeling = velgAvdelingRutine(kandidatAvdelinger);
-                    Avdeling nyAvdeling = velgEntitet(kandidatAvdelinger, Avdeling.class);
-                    if (ansatt != null && nyAvdeling != null)
-                        ansDAO.flyttAnsatt(ansatt.getId(), nyAvdeling.getId());
+                    AvdelingGrensesnitt nyAvdelingGrensesnitt = velgEntitet(kandidatAvdelinger, AvdelingGrensesnitt.class);
+                    if (ansattGrensesnitt != null && nyAvdelingGrensesnitt != null)
+                        ansDAO.flyttAnsatt(ansattGrensesnitt.getAnsId(), nyAvdelingGrensesnitt.getAvdId());
                     break;
             }
         }
@@ -341,8 +341,8 @@ public class Tekstgrensesnitt {
     private void administrerProsjektMeny(int prosjId) {
         boolean running = true;
         while (running) {
-            Prosjekt prosjekt = proDAO.finnProsjekt(prosjId);
-            visAdministrerProsjektMeny(prosjekt);
+            ProsjektGrensesnitt prosjektGrensesnitt = proDAO.finnProsjekt(prosjId);
+            visAdministrerProsjektMeny(prosjektGrensesnitt);
             String input = scanner.nextLine();
             switch (input) {
                 case "1":
@@ -372,38 +372,38 @@ public class Tekstgrensesnitt {
                         proDAO.endreBeskrivelse(prosjId, beskrivelse);
                     break;
                 case "5":
-                    administrerProsjektTilknyttingerMeny(null, prosjekt.getId());
+                    administrerProsjektTilknyttingerMeny(null, prosjektGrensesnitt.getProsjektId());
                     break;
             }
         }
     }
 
     private void administrerProsjektTilknyttingerMeny(Integer ansId, Integer proId) {
-        Prosjekt prosjekt;
-        Ansatt ansatt;
+        ProsjektGrensesnitt prosjektGrensesnitt;
+        AnsattGrensesnitt ansattGrensesnitt;
         boolean running = true;
         if (ansId != null) {
             while (running) {
-                ansatt = ansDAO.finnAnsatt(ansId);
-                visAdministrerProsjektDeltakelserMeny(ansatt, null);
+                ansattGrensesnitt = ansDAO.finnAnsatt(ansId);
+                visAdministrerProsjektDeltakelserMeny(ansattGrensesnitt, null);
                 String input = scanner.nextLine();
                 switch (input) {
                     case "1":
                         running = false;
                         break;
                     case "2":
-                        List<Prosjekt> kandidatProsjekter = proDAO.finnAlle();
-                        for (ProsjektDeltakelse p : ansatt.getProsjekter())
-                            if (kandidatProsjekter.contains(p.getProsjekt()))
-                                kandidatProsjekter.remove(p.getProsjekt());
-                        prosjekt = velgEntitet(kandidatProsjekter, Prosjekt.class);
-                        if (prosjekt != null)
-                            leggTilDeltakelseRutine(ansatt, prosjekt);
+                        List<ProsjektGrensesnitt> kandidatProsjekter = proDAO.finnAlle();
+//                        for (ProsjektDeltakelseGrensesnitt p : ansattGrensesnitt.getProsjektDeltakelser())
+//                            if (kandidatProsjekter.contains(p.getProsjekt()))
+//                                kandidatProsjekter.remove(p.getProsjekt());
+                        prosjektGrensesnitt = velgEntitet(kandidatProsjekter, ProsjektGrensesnitt.class);
+                        if (prosjektGrensesnitt != null)
+                            leggTilDeltakelseRutine(ansattGrensesnitt, prosjektGrensesnitt);
                         break;
                     default:
                         Map<String, Integer> proIder = new HashMap<>();
-                        for (ProsjektDeltakelse pd : ansatt.getProsjekter())
-                            proIder.put("p" + pd.getProsjekt().getId(), pd.getId());
+//                        for (ProsjektDeltakelseGrensesnitt pd : ansattGrensesnitt.getProsjektDeltakelser())
+//                            proIder.put("p" + pd.getProsjekt().getProsjektId(), pd.getId());
                         if (proIder.containsKey(input))
                             administrerProsjektDeltakelseMeny(proIder.get(input));
                         break;
@@ -411,31 +411,31 @@ public class Tekstgrensesnitt {
             }
         } else {
             while (running) {
-                prosjekt = proDAO.finnProsjekt(proId);
-                visAdministrerProsjektDeltakelserMeny(null, prosjekt);
+                prosjektGrensesnitt = proDAO.finnProsjekt(proId);
+                visAdministrerProsjektDeltakelserMeny(null, prosjektGrensesnitt);
                 String input = scanner.nextLine();
                 switch (input) {
                     case "1":
                         running = false;
                         break;
                     case "2":
-                        List<Ansatt> kandidatAnsatte = ansDAO.finnAlle();
-                        for (ProsjektDeltakelse p : prosjekt.getDeltakelser())
-                            if (kandidatAnsatte.contains(p.getProsjekt()))
-                                kandidatAnsatte.remove(p.getProsjekt());
+                        List<AnsattGrensesnitt> kandidatAnsatte = ansDAO.finnAlle();
+//                        for (ProsjektDeltakelseGrensesnitt p : prosjektGrensesnitt.getProsjektDeltakelser())
+//                            if (kandidatAnsatte.contains(p.getProsjekt()))
+//                                kandidatAnsatte.remove(p.getProsjekt());
                         if (kandidatAnsatte.isEmpty()) {
                             System.out.println(("Det finnes ingen ansatte som kan tilknyttes prosjektet"));
                             break;
                         }
 //                        ansatt = velgAnsattRutine(kandidatAnsatte);
-                        ansatt = velgEntitet(kandidatAnsatte, Ansatt.class);
-                        if (ansatt != null)
-                            leggTilDeltakelseRutine(ansatt, prosjekt);
+                        ansattGrensesnitt = velgEntitet(kandidatAnsatte, AnsattGrensesnitt.class);
+                        if (ansattGrensesnitt != null)
+                            leggTilDeltakelseRutine(ansattGrensesnitt, prosjektGrensesnitt);
                         break;
                     default:
                         Map<String, Integer> proIder = new HashMap<>();
-                        for (ProsjektDeltakelse pd : prosjekt.getDeltakelser())
-                            proIder.put(pd.getAnsatt().getBrukernavn(), pd.getId());
+//                        for (ProsjektDeltakelseGrensesnitt pd : prosjektGrensesnitt.getProsjektDeltakelser())
+//                            proIder.put(pd.getAnsatt().getBrukerNavn(), pd.getId());
                         if (proIder.containsKey(input))
                             administrerProsjektDeltakelseMeny(proIder.get(input));
                         break;
@@ -447,7 +447,7 @@ public class Tekstgrensesnitt {
     private void administrerProsjektDeltakelseMeny(Integer prosjektDeltakelseId) {
         boolean running = true;
         while (running) {
-            ProsjektDeltakelse pd = proDDao.finnProsjektDeltakelse(prosjektDeltakelseId);
+            ProsjektDeltakelseGrensesnitt pd = proDDao.finnProsjektDeltakelse(prosjektDeltakelseId);
             visAdministrerProsjektTilknyttingerMeny(pd);
             String input = scanner.nextLine();
             switch (input) {
@@ -476,29 +476,29 @@ public class Tekstgrensesnitt {
     private void leggTilAnsattRutine() {
         boolean running = true;
         while (running) {
-            Ansatt ny = new Ansatt();
+            AnsattGrensesnitt ny = new AnsattGrensesnitt();
             ny.setFornavn(Statics.getStringInput(2, "et", "fornavn", true));
             if (ny.getFornavn() == null)
                 return;
             ny.setEtternavn(Statics.getStringInput(2, "et", "etternavn", true));
             if (ny.getEtternavn() == null)
                 return;
-            ny.setAnsDato(Statics.getDateInput("en ansettelsesdato"));
-            if (ny.getAnsDato() == null)
+            ny.setAnsettelsesDato(Statics.getDateInput("en ansettelsesdato"));
+            if (ny.getAnsettelsesDato() == null)
                 return;
-            ny.setMndLonn(Statics.getIntegerInput("en", "månedslønn"));
-            if (ny.getMndLonn() == null)
+            ny.setMaanedsLonn(Statics.getIntegerInput("en", "månedslønn"));
+            if (ny.getMaanedsLonn() == null)
                 return;
             ny.setStilling(Statics.getStringInput(4, "en", "stillingsbeskrivelse", false));
             if (ny.getStilling() == null)
                 return;
-            Avdeling avdeling;
+            AvdelingGrensesnitt avdelingGrensesnitt;
             if (avdDAO.finnAlle().size() == 0)
-                avdeling = avdDAO.finnAvdeling(1);
+                avdelingGrensesnitt = avdDAO.finnAvdeling(1);
             else
 //                avdeling = velgAvdelingRutine(avdDAO.finnAlle());
-                avdeling = velgEntitet(avdDAO.finnAlle(), Avdeling.class);
-            ny.setAvdeling(avdeling);
+                avdelingGrensesnitt = velgEntitet(avdDAO.finnAlle(), AvdelingGrensesnitt.class);
+            ny.setAvdeling(avdelingGrensesnitt);
             System.out.println(ny.info());
             System.out.println("Returner '1' for å avbryte, '2' for å forsøke på nytt eller trykk enter for å bekrefte ny ansatt");
             String input = scanner.nextLine();
@@ -509,7 +509,7 @@ public class Tekstgrensesnitt {
                 case "2":
                     break;
                 default:
-                    ansDAO.addAnsatt(ny, avdeling.getId());
+                    ansDAO.addAnsatt(ny, avdelingGrensesnitt.getAvdId());
                     running = false;
                     break;
             }
@@ -519,13 +519,13 @@ public class Tekstgrensesnitt {
     private void leggTilAvdelingRutine() {
         boolean running = true;
         while (running) {
-            Avdeling ny = new Avdeling();
+            AvdelingGrensesnitt ny = new AvdelingGrensesnitt();
 //            ny.setSjef(velgAnsattRutine(ansDAO.finnAnsatteIkkeSjef())); //TODO:vurdere å endre på avdDao slik at den bare tar en ny avdeling som parameter
-            ny.setSjef(velgEntitet(ansDAO.finnAnsatteIkkeSjef(), Ansatt.class));
+            ny.setSjef(velgEntitet(ansDAO.finnAnsatteIkkeSjef(), AnsattGrensesnitt.class));
             if (ny.getSjef() == null)
                 return;
-            ny.setNavn(Statics.getStringInput(2, "et", "avdelingsnavn", false));
-            if (ny.getNavn() == null)
+            ny.setAvdelingsNavn(Statics.getStringInput(2, "et", "avdelingsnavn", false));
+            if (ny.getAvdelingsNavn() == null)
                 return;
             System.out.println(ny.info());
             System.out.println("Returner '1' for å avbryte, '2' for å forsøke på nytt eller trykk enter for å bekrefte ny avdeling");
@@ -537,7 +537,7 @@ public class Tekstgrensesnitt {
                 case "2":
                     break;
                 default:
-                    avdDAO.addAvdeling(ny, ny.getSjef().getId());
+                    avdDAO.addAvdeling(ny, ny.getSjef().getAnsId());
                     running = false;
                     break;
             }
@@ -547,11 +547,11 @@ public class Tekstgrensesnitt {
     private void leggTilProsjektRutine() {
         boolean running = true;
         while (running) {
-            Prosjekt ny = new Prosjekt();
+            ProsjektGrensesnitt ny = new ProsjektGrensesnitt();
             String navn = Statics.getStringInput(2, "et", "prosjektnavn", false);
             if (navn == null)
                 return;
-            ny.setNavn(navn);
+            ny.setProsjektNavn(navn);
             String beskrivelse = Statics.getStringInput(5, "en", "prosjektbeskrivelse", false);
             if (beskrivelse == null)
                 return;
@@ -573,17 +573,17 @@ public class Tekstgrensesnitt {
         }
     }
 
-    private void leggTilDeltakelseRutine(Ansatt ansatt, Prosjekt prosjekt) {
+    private void leggTilDeltakelseRutine(AnsattGrensesnitt ansattGrensesnitt, ProsjektGrensesnitt prosjektGrensesnitt) {
         String rolle = "tufs";
         int timer = 3;
-        proDDao.addProsjektDeltakelse(ansatt.getId(), prosjekt.getId(), rolle, timer);
+        proDDao.addProsjektDeltakelse(ansattGrensesnitt.getAnsId(), prosjektGrensesnitt.getProsjektId(), rolle, timer);
     }
 
-    private void visAdministrerAnsattMeny(Ansatt ansatt) {
+    private void visAdministrerAnsattMeny(AnsattGrensesnitt ansattGrensesnitt) {
         System.out.println("Administrer ansatt meny");
-        System.out.println("Ansatt " + ansatt.getBrukernavn() + ": " + ansatt.getFornavn() + " " + ansatt.getEtternavn());
-        System.out.println("\tStilling: " + ansatt.getStilling() + ", Avdeling: " + ansatt.getAvdeling().getNavn());
-        System.out.println("\tMånedslønn: " + ansatt.getMndLonn() + ", Ansettelsesdato: " + ansatt.getAnsDato());
+        System.out.println("Ansatt " + ansattGrensesnitt.getBrukerNavn() + ": " + ansattGrensesnitt.getFornavn() + " " + ansattGrensesnitt.getEtternavn());
+        System.out.println("\tStilling: " + ansattGrensesnitt.getStilling() + ", Avdeling: " + ansattGrensesnitt.getAvdeling().getAvdelingsNavn());
+        System.out.println("\tMånedslønn: " + ansattGrensesnitt.getMaanedsLonn() + ", Ansettelsesdato: " + ansattGrensesnitt.getAnsettelsesDato());
         System.out.println("Vennligst velg en av følgende og trykk 'enter'");
         System.out.println("\tReturner '1' for å returnere til forrige meny");
         System.out.println("\tReturner '2' for å slette den ansatte");
@@ -592,9 +592,9 @@ public class Tekstgrensesnitt {
         System.out.println("\tReturner '5' for å endre den ansattes detaljinformasjon");
     }
 
-    private void visAdministrerAnsattDetaljerMeny(Ansatt ansatt) {
-        System.out.println("Ansatt " + ansatt.getBrukernavn() + ": " + ansatt.getFornavn() + " " + ansatt.getEtternavn());
-        System.out.println("\tStilling: " + ansatt.getStilling() + ", Månedslønn: " + ansatt.getMndLonn() + ", Ansettelsesdato: " + ansatt.getAnsDato());
+    private void visAdministrerAnsattDetaljerMeny(AnsattGrensesnitt ansattGrensesnitt) {
+        System.out.println("Ansatt " + ansattGrensesnitt.getBrukerNavn() + ": " + ansattGrensesnitt.getFornavn() + " " + ansattGrensesnitt.getEtternavn());
+        System.out.println("\tStilling: " + ansattGrensesnitt.getStilling() + ", Månedslønn: " + ansattGrensesnitt.getMaanedsLonn() + ", Ansettelsesdato: " + ansattGrensesnitt.getAnsettelsesDato());
         System.out.println("Vennligst velg en av følgende og trykk 'enter'");
         System.out.println("\tReturner '1' for å returnere til forrige meny");
         System.out.println("\tReturner '2' for å endre fornavn");
@@ -604,8 +604,8 @@ public class Tekstgrensesnitt {
         System.out.println("\tReturner '6' for å endre stillingsbeskrivelse");
     }
 
-    private void visAdministrerAvdelingMeny(Avdeling avdeling) {
-        System.out.println("Avdeling Id: a" + avdeling.getId() + ", Navn: " + avdeling.getNavn() + ", Sjef: " + avdeling.getSjef().getBrukernavn() + ", " + avdeling.getSjef().getFornavn() + " " + avdeling.getSjef().getEtternavn() + " " + avdeling.getAnsatte().size() + " ansatte");//TODO: lage metode i Avdeling for slik utskrift
+    private void visAdministrerAvdelingMeny(AvdelingGrensesnitt avdelingGrensesnitt) {
+        System.out.println("Avdeling Id: a" + avdelingGrensesnitt.getAvdId() + ", Navn: " + avdelingGrensesnitt.getAvdelingsNavn() + ", Sjef: " + avdelingGrensesnitt.getSjef().getBrukerNavn() + ", " + avdelingGrensesnitt.getSjef().getFornavn() + " " + avdelingGrensesnitt.getSjef().getEtternavn() + " " + avdelingGrensesnitt.getAnsatte().size() + " ansatte");//TODO: lage metode i Avdeling for slik utskrift
         System.out.println("Vennligst velg en av følgende og trykk 'enter'");
         System.out.println("\tReturner '1' for å returnere til forrige meny");
         System.out.println("\tReturner '2' for å slette avdelingen");
@@ -614,8 +614,8 @@ public class Tekstgrensesnitt {
         System.out.println("\tReturner '5' for å omplassere avdelingens ansatte");
     }
 
-    private void visAdministrerProsjektMeny(Prosjekt prosjekt) {
-        System.out.println("ProsjektId: a" + prosjekt.getId() + ", Navn: " + prosjekt.getNavn() + ", Beskrivelse: " + prosjekt.getBeskrivelse());//TODO: lage metode i prosjekt for slik utskrift
+    private void visAdministrerProsjektMeny(ProsjektGrensesnitt prosjektGrensesnitt) {
+        System.out.println("ProsjektId: a" + prosjektGrensesnitt.getProsjektId() + ", Navn: " + prosjektGrensesnitt.getProsjektNavn() + ", Beskrivelse: " + prosjektGrensesnitt.getBeskrivelse());//TODO: lage metode i prosjekt for slik utskrift
         System.out.println("Vennligst velg en av følgende og trykk 'enter'");
         System.out.println("\tReturner '1' for å returnere til forrige meny");
         System.out.println("\tReturner '2' for å slette prosjektet");
@@ -624,32 +624,32 @@ public class Tekstgrensesnitt {
         System.out.println("\tReturner '5' for å administrere prosjektmedlemmer");
     }
 
-    private void visAdministrerProsjektDeltakelserMeny(Ansatt ansatt, Prosjekt prosjekt) {
+    private void visAdministrerProsjektDeltakelserMeny(AnsattGrensesnitt ansattGrensesnitt, ProsjektGrensesnitt prosjektGrensesnitt) {
         //TODO: legge inn for motsatt tilfelle, at prosjekt!=null
-        List<ProsjektDeltakelse> deltakelser;
-        if (ansatt != null) {
-            deltakelser = ansatt.getProsjekter();
-            System.out.println(ansatt.info());
+        List<ProsjektDeltakelseGrensesnitt> deltakelser;
+        if (ansattGrensesnitt != null) {
+            deltakelser = ansattGrensesnitt.getProsjektDeltakelser();
+            System.out.println(ansattGrensesnitt.info());
             if (deltakelser.size() == 0)
                 System.out.println("Den ansatte deltar ikke i noen prosjekt");
             else
                 System.out.println("Den ansatte deltar i følgende prosjekt:");
-            for (ProsjektDeltakelse d : deltakelser)
-                System.out.println(d.prosjektInfo());
+            for (ProsjektDeltakelseGrensesnitt d : deltakelser)
+                System.out.println(d.info());
             System.out.println("vennligst velg");
             System.out.println("\tReturner '1' for å returnere til forrige meny");
             System.out.println("\tReturner '2' for å registrere en ny deltakelse");
             if (deltakelser.size() != 0)
                 System.out.println("\tReturner en ProsjektId for å oppdatere / slette deltakelse.");
         } else {
-            deltakelser = prosjekt.getDeltakelser();
-            System.out.println(prosjekt.info());
+            deltakelser = prosjektGrensesnitt.getProsjektDeltakelser();
+            System.out.println(prosjektGrensesnitt.info());
             if (deltakelser.size() == 0)
                 System.out.println("Prosjektet har ingen medlemmer");
             else
                 System.out.println("Prosjektmedlemmer:");
-            for (ProsjektDeltakelse d : deltakelser)
-                System.out.println("\t" + d.ansattInfo());
+            for (ProsjektDeltakelseGrensesnitt d : deltakelser)
+                System.out.println("\t" + d.info());
             System.out.println("Vennligst velg");
             System.out.println("\tReturner '1' for å returnere til forrige meny");
             System.out.println("\tReturner '2' for å registrere en ny deltakelse");
@@ -658,7 +658,7 @@ public class Tekstgrensesnitt {
         }
     }
 
-    private void visAdministrerProsjektTilknyttingerMeny(ProsjektDeltakelse pd) {
+    private void visAdministrerProsjektTilknyttingerMeny(ProsjektDeltakelseGrensesnitt pd) {
         System.out.println(pd.info());
         System.out.println("Vennligst velg en av følgende og trykk 'enter'");
         System.out.println("\tReturner '1' for å returnere til forrige meny");

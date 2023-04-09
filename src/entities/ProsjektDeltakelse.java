@@ -6,27 +6,52 @@ import java.util.Objects;
 
 @Entity
 @Table(schema ="Oblig_3")
-public class ProsjektDeltakelse implements asd{
+public class ProsjektDeltakelse {
+//Deklarasjon av objektvariabler
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prosjekt_deltakelse_id")
-    private int id;
+    private Integer id=null;
     @ManyToOne
     @JoinColumn(name = "ans_id", referencedColumnName = "ans_id")
-    private Ansatt ansatt;
+    private Ansatt ansatt=null;
     @ManyToOne
     @JoinColumn(name = "prosj_id",referencedColumnName = "prosj_id")
-    private Prosjekt prosjekt;
-    private String rolle;
+    private Prosjekt prosjekt=null;
+    private String rolle=null;
     @Column(name = "ant_timer")
-    private int timer;
+    private Integer timer=null;
+//mine metoder
+//Equals, hash, getters & setters
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProsjektDeltakelse that = (ProsjektDeltakelse) o;
+        return id == that.id;
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "ProsjektDeltakelse{" +
+                "prosjDeltId=" + id +
+                ", ansatt=" + ansatt +
+                ", prosjekt=" + prosjekt +
+                ", rolle='" + rolle + '\'' +
+                ", timer=" + timer +
+                '}';
+    }
+
     public Integer getId() {
         return id;
     }
 
-    public void setId(int prosjDeltId) {
-        this.id = prosjDeltId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Ansatt getAnsatt() {
@@ -53,64 +78,11 @@ public class ProsjektDeltakelse implements asd{
         this.rolle = rolle;
     }
 
-    public int getTimer() {
+    public Integer getTimer() {
         return timer;
     }
 
-    public void setTimer(int timer) {
+    public void setTimer(Integer timer) {
         this.timer = timer;
-    }
-
-    public ProsjektDeltakelse(){}
-
-    public ProsjektDeltakelse(Ansatt ansatt, Prosjekt prosjekt, String rolle, int timer) {
-        this.ansatt = ansatt;
-        this.prosjekt = prosjekt;
-        this.rolle = rolle;
-        this.timer = timer;
-    }
-
-    @Override
-    public String toString() {
-        return "ProsjektDeltakelse{" +
-                "prosjDeltId=" + id +
-                ", ansatt=" + ansatt +
-                ", prosjekt=" + prosjekt +
-                ", rolle='" + rolle + '\'' +
-                ", timer=" + timer +
-                '}';
-    }
-    public String ansattInfo(){
-        return "Brukernavn: "+ansatt.getBrukernavn()+", Navn: '"+ansatt.getFornavn()+" "+ansatt.getEtternavn()+", Rolle: "+getRolle()+", Timer: "+getTimer();
-    }
-
-    public String prosjektInfo() {
-        return "ProsjektId p"+prosjekt.getId()+", Navn"+prosjekt.getNavn()+", Rolle: "+getRolle()+", Timer: "+getTimer();
-    }
-    public String info(){
-        return "Brukernavn: "+ansatt.getBrukernavn()+", Navn: '"+ansatt.getFornavn()+" "+ansatt.getEtternavn()+"', ProsjektId p"+prosjekt.getId()+", Navn"+prosjekt.getNavn()+", Rolle: "+getRolle()+", Timer: "+getTimer();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProsjektDeltakelse that = (ProsjektDeltakelse) o;
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public String getNavn() {
-        return "'" +ansatt.getNavn()+"-"+prosjekt.getNavn()+ "'";
-    }
-
-    @Override
-    public String getEntId() {
-        return "pd"+id;
     }
 }

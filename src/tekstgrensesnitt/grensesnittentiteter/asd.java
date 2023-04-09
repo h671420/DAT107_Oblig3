@@ -1,11 +1,10 @@
-package entities;
+package tekstgrensesnitt.grensesnittentiteter;
 
 public interface asd {
     String getNavn();
 
     String getEntId();
 
-    Integer getId();
-
     String info();
+    Integer getId();
 }

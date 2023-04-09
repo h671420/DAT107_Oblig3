@@ -1,6 +1,6 @@
 package DAO;
 
-import entities.asd;
+import tekstgrensesnitt.grensesnittentiteter.asd;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package DAO;
 
-import entities.Prosjekt;
+import tekstgrensesnitt.grensesnittentiteter.ProsjektGrensesnitt;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -8,14 +8,14 @@ import java.util.List;
 public class ProsjektDAO implements Dao{
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
-    public void addProsjekt(Prosjekt prosjekt) {
+    public void addProsjekt(ProsjektGrensesnitt prosjektGrensesnitt) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
 
             tx.begin();
-            em.persist(prosjekt);
+            em.persist(prosjektGrensesnitt);
             tx.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -24,11 +24,11 @@ public class ProsjektDAO implements Dao{
         }
     }
 
-    public Prosjekt finnProsjekt(int prosjId) {
+    public ProsjektGrensesnitt finnProsjekt(int prosjId) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            return em.find(Prosjekt.class, prosjId);
+            return em.find(ProsjektGrensesnitt.class, prosjId);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -37,11 +37,11 @@ public class ProsjektDAO implements Dao{
         }
     }
 
-    public List<Prosjekt> finnAlle() {
+    public List<ProsjektGrensesnitt> finnAlle() {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Prosjekt> tq = em.createQuery("SELECT p from Prosjekt p", Prosjekt.class);
+            TypedQuery<ProsjektGrensesnitt> tq = em.createQuery("SELECT p from ProsjektGrensesnitt p", ProsjektGrensesnitt.class);
             return tq.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,8 +57,8 @@ public class ProsjektDAO implements Dao{
 
         try {
             tx.begin();
-            Prosjekt prosjekt = em.find(Prosjekt.class, proId);
-            em.remove(prosjekt);
+            ProsjektGrensesnitt prosjektGrensesnitt = em.find(ProsjektGrensesnitt.class, proId);
+            em.remove(prosjektGrensesnitt);
             tx.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,8 +72,8 @@ public class ProsjektDAO implements Dao{
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            Prosjekt prosjekt = em.find(Prosjekt.class, proId);
-            prosjekt.setNavn(navn);
+            ProsjektGrensesnitt prosjektGrensesnitt = em.find(ProsjektGrensesnitt.class, proId);
+            prosjektGrensesnitt.setProsjektNavn(navn);
             tx.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,8 +87,8 @@ public class ProsjektDAO implements Dao{
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            Prosjekt prosjekt=em.find(Prosjekt.class,prosjId);
-            prosjekt.setBeskrivelse(beskrivelse);
+            ProsjektGrensesnitt prosjektGrensesnitt =em.find(ProsjektGrensesnitt.class,prosjId);
+            prosjektGrensesnitt.setBeskrivelse(beskrivelse);
             tx.commit();
         }
         catch(Exception e){

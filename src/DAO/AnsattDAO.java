@@ -1,7 +1,8 @@
 package DAO;
 
-import entities.Ansatt;
-import entities.Avdeling;
+
+import tekstgrensesnitt.grensesnittentiteter.AnsattGrensesnitt;
+import tekstgrensesnitt.grensesnittentiteter.AvdelingGrensesnitt;
 import jakarta.persistence.*;
 
 import java.lang.Exception;
@@ -16,11 +17,11 @@ public class AnsattDAO implements Dao{
 
 
 
-    public Ansatt finnAnsatt(int ansId) {
+    public AnsattGrensesnitt finnAnsatt(int ansId) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            return em.find(Ansatt.class, ansId);
+            return em.find(AnsattGrensesnitt.class, ansId);
         } catch (Exception e) {
 //            e.printStackTrace();
             System.out.println("finnAnsatt() feilet");
@@ -29,10 +30,10 @@ public class AnsattDAO implements Dao{
             em.close();
         }
     }
-    public List<Ansatt> finnAnsatteIkkeSjef(){
+    public List<AnsattGrensesnitt> finnAnsatteIkkeSjef(){
         EntityManager em = emf.createEntityManager();
         try{
-            TypedQuery<Ansatt> tq = em.createQuery("SELECT ansatte FROM Ansatt ansatte WHERE ansatte.id NOT IN (SELECT avdelinger.sjef.id from Avdeling avdelinger )", Ansatt.class);
+            TypedQuery<AnsattGrensesnitt> tq = em.createQuery("SELECT ansatte FROM AnsattGrensesnitt ansatte WHERE ansatte.id NOT IN (SELECT avdelinger.sjef.id from AvdelingGrensesnitt avdelinger )", AnsattGrensesnitt.class);
             return tq.getResultList();
         }
         catch(Exception e){
@@ -49,9 +50,9 @@ public class AnsattDAO implements Dao{
 
         try{
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setFornavn(fornavn);
-            ansatt.createUserName();
+            AnsattGrensesnitt ansattGrensesnitt = em.find(AnsattGrensesnitt.class,ansId);
+            ansattGrensesnitt.setFornavn(fornavn);
+            ansattGrensesnitt.lagBrukerNavn();
             tx.commit();
         }
         catch(Exception e){
@@ -67,9 +68,9 @@ public class AnsattDAO implements Dao{
 
         try{
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setEtternavn(etternavn);
-            ansatt.createUserName();
+            AnsattGrensesnitt ansattGrensesnitt = em.find(AnsattGrensesnitt.class,ansId);
+            ansattGrensesnitt.setEtternavn(etternavn);
+            ansattGrensesnitt.lagBrukerNavn();
             tx.commit();
         }
         catch(Exception e){
@@ -85,8 +86,8 @@ public class AnsattDAO implements Dao{
 
         try{
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setStilling(stilling);
+            AnsattGrensesnitt ansattGrensesnitt = em.find(AnsattGrensesnitt.class,ansId);
+            ansattGrensesnitt.setStilling(stilling);
             tx.commit();
         }
         catch(Exception e){
@@ -102,8 +103,8 @@ public class AnsattDAO implements Dao{
 
         try{
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setAnsDato(nydato);
+            AnsattGrensesnitt ansattGrensesnitt = em.find(AnsattGrensesnitt.class,ansId);
+            ansattGrensesnitt.setAnsettelsesDato(nydato);
             tx.commit();
         }
         catch(Exception e){
@@ -119,8 +120,8 @@ public class AnsattDAO implements Dao{
 
         try{
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setMndLonn(lønn);
+            AnsattGrensesnitt ansattGrensesnitt = em.find(AnsattGrensesnitt.class,ansId);
+            ansattGrensesnitt.setMaanedsLonn(lønn);
             tx.commit();
         }
         catch(Exception e){
@@ -130,35 +131,36 @@ public class AnsattDAO implements Dao{
             em.close();
         }
     }
-    public List<Ansatt> finnAlle() {
+    public List<AnsattGrensesnitt> finnAlle() {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Ansatt> tq = em.createQuery("SELECT a FROM Ansatt a WHERE a.id != 1", Ansatt.class);
+            TypedQuery<AnsattGrensesnitt> tq = em.createQuery("SELECT a FROM AnsattGrensesnitt a WHERE a.ansId != 1", AnsattGrensesnitt.class);
+            new AnsattGrensesnitt();
             return tq.getResultList();
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             System.out.println("finnAnsatte() feilet");
             return null;
         } finally {
             em.close();
         }
     }
-    public Ansatt addAnsatt(Ansatt ansatt, int avdNr){
+    public AnsattGrensesnitt addAnsatt(AnsattGrensesnitt ansattGrensesnitt, int avdNr){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
             tx.begin();
-            Avdeling avd = em.find(Avdeling.class,avdNr);
+            AvdelingGrensesnitt avd = em.find(AvdelingGrensesnitt.class,avdNr);
             System.out.println(avdNr);
-            avd.addAnsatt(ansatt);
-            ansatt.setAvdeling(avd);
+            avd.addAnsatt(ansattGrensesnitt);
+            ansattGrensesnitt.setAvdeling(avd);
             tx.commit();
             tx.begin();
-            ansatt.createUserName();
+            ansattGrensesnitt.lagBrukerNavn();
             tx.commit();
-            return ansatt;
+            return ansattGrensesnitt;
         }
         catch (Exception e){
             e.printStackTrace();
@@ -175,8 +177,8 @@ public class AnsattDAO implements Dao{
 
         try {
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            em.remove(ansatt);
+            AnsattGrensesnitt ansattGrensesnitt = em.find(AnsattGrensesnitt.class,ansId);
+            em.remove(ansattGrensesnitt);
             tx.commit();
             return true;
         }
@@ -194,13 +196,13 @@ public class AnsattDAO implements Dao{
 
         try {
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            if (ansatt.erSjef())
+            AnsattGrensesnitt ansattGrensesnitt = em.find(AnsattGrensesnitt.class,ansId);
+            if (ansattGrensesnitt.erSjef())
                 throw new Exception("er sjef, kan ikke flyttes");
-            Avdeling avdeling = em.find(Avdeling.class,avdId);
-            ansatt.getAvdeling().getAnsatte().remove(ansatt);
-            avdeling.getAnsatte().add(ansatt);
-            ansatt.setAvdeling(avdeling);
+            AvdelingGrensesnitt avdelingGrensesnitt = em.find(AvdelingGrensesnitt.class,avdId);
+            ansattGrensesnitt.getAvdeling().getAnsatte().remove(ansattGrensesnitt);
+            avdelingGrensesnitt.getAnsatte().add(ansattGrensesnitt);
+            ansattGrensesnitt.setAvdeling(avdelingGrensesnitt);
             tx.commit();
         }
         catch (Exception e){

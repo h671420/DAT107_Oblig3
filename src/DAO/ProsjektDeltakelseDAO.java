@@ -1,8 +1,8 @@
 package DAO;
 
-import entities.Ansatt;
-import entities.Prosjekt;
-import entities.ProsjektDeltakelse;
+import tekstgrensesnitt.grensesnittentiteter.AnsattGrensesnitt;
+import tekstgrensesnitt.grensesnittentiteter.ProsjektGrensesnitt;
+import tekstgrensesnitt.grensesnittentiteter.ProsjektDeltakelseGrensesnitt;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -10,11 +10,11 @@ import java.util.List;
 public class ProsjektDeltakelseDAO implements Dao{
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
-    public ProsjektDeltakelse finnProsjektDeltakelse(int deltId){
+    public ProsjektDeltakelseGrensesnitt finnProsjektDeltakelse(int deltId){
         EntityManager em = emf.createEntityManager();
 
         try{
-            return em.find(ProsjektDeltakelse.class, deltId);
+            return em.find(ProsjektDeltakelseGrensesnitt.class, deltId);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -25,11 +25,11 @@ public class ProsjektDeltakelseDAO implements Dao{
         }
     }
 
-    public List<ProsjektDeltakelse> finnAlle(){
+    public List<ProsjektDeltakelseGrensesnitt> finnAlle(){
             EntityManager em = emf.createEntityManager();
 
             try{
-                TypedQuery<ProsjektDeltakelse> tq = em.createQuery("SELECT p from ProsjektDeltakelse p", ProsjektDeltakelse.class);
+                TypedQuery<ProsjektDeltakelseGrensesnitt> tq = em.createQuery("SELECT p from ProsjektDeltakelseGrensesnitt p", ProsjektDeltakelseGrensesnitt.class);
                 return tq.getResultList();
             }
             catch (Exception e){
@@ -45,11 +45,16 @@ public class ProsjektDeltakelseDAO implements Dao{
             EntityTransaction tx = em.getTransaction();
             try{
                 tx.begin();
-                Prosjekt prosjekt=em.find(Prosjekt.class,prosjId);
-                Ansatt ansatt = em.find(Ansatt.class,ansId);
-                ProsjektDeltakelse ny = new ProsjektDeltakelse(ansatt,prosjekt,rolle,timer);
-                ansatt.getProsjekter().add(ny);
-                prosjekt.getDeltakelser().add(ny);
+                ProsjektGrensesnitt prosjektGrensesnitt =em.find(ProsjektGrensesnitt.class,prosjId);
+                AnsattGrensesnitt ansattGrensesnitt = em.find(AnsattGrensesnitt.class,ansId);
+//                ProsjektDeltakelseGrensesnitt ny = new ProsjektDeltakelseGrensesnitt(ansattGrensesnitt, prosjektGrensesnitt,rolle,timer);
+                ProsjektDeltakelseGrensesnitt ny = new ProsjektDeltakelseGrensesnitt();
+                ny.setAnsatt(ansattGrensesnitt);
+                ny.setProsjekt(prosjektGrensesnitt);
+                ny.setRolle(rolle);
+                ny.setTimer(timer);
+                ansattGrensesnitt.getProsjektDeltakelser().add(ny);
+                prosjektGrensesnitt.getProsjektDeltakelser().add(ny);
                 tx.commit();
 
             }
@@ -66,8 +71,8 @@ public class ProsjektDeltakelseDAO implements Dao{
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
-            pd.getAnsatt().getProsjekter().remove(pd);
+            ProsjektDeltakelseGrensesnitt pd = em.find(ProsjektDeltakelseGrensesnitt.class,prosjektDeltakelseId);
+            pd.getAnsatt().getProsjektDeltakelser().remove(pd);
             em.remove(pd);
             tx.commit();
         }
@@ -84,7 +89,7 @@ public class ProsjektDeltakelseDAO implements Dao{
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
+            ProsjektDeltakelseGrensesnitt pd = em.find(ProsjektDeltakelseGrensesnitt.class,prosjektDeltakelseId);
             pd.setRolle(nyRolle);
             tx.commit();
         }
@@ -101,7 +106,7 @@ public class ProsjektDeltakelseDAO implements Dao{
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
+            ProsjektDeltakelseGrensesnitt pd = em.find(ProsjektDeltakelseGrensesnitt.class,prosjektDeltakelseId);
             pd.setTimer(nyTimer);
             tx.commit();
         }

@@ -1,87 +1,79 @@
 package entities;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(schema ="Oblig_3")
-public class Prosjekt implements asd {
+@Table(schema = "Oblig_3")
+public class Prosjekt {
+//Deklarasjon av objektvariabler
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prosj_id")
-    private int id;
+    private Integer prosjektId =null;
     @Column(name = "prosj_navn")
-    private String navn;
+    private String prosjektNavn =null;
     @Column(name = "prosj_beskr")
-    private String beskrivelse;
-    @OneToMany(mappedBy = "prosjekt",cascade = CascadeType.PERSIST)
-    private List<ProsjektDeltakelse> deltakelser=new ArrayList<>();
+    private String beskrivelse=null;
+    @OneToMany(mappedBy = "prosjekt", cascade = CascadeType.PERSIST)
+    private List<ProsjektDeltakelse> prosjektDeltakelser = new ArrayList<>();
+//mine metoder
 
-
-
-    public String getBeskrivelse() {
-        return beskrivelse;
-    }
-    public void setBeskrivelse(String beskrivelse) {
-        this.beskrivelse = beskrivelse;
-    }
-    public Prosjekt(String navn, String beskrivelse) {
-        this.navn = navn;
-        this.beskrivelse = beskrivelse;
-    }
-    public Prosjekt(){}
-    @Override
-    public String toString() {
-        return "Prosjekt{" +
-                "prosjId=" + id +
-                ", navn='" + navn + '\'' +
-                ", beskrivelse='" + beskrivelse + '\'' +
-                '}';
-    }
-    public List<ProsjektDeltakelse> getDeltakelser() {
-        return deltakelser;
-    }
-    public void setDeltakelser(List<ProsjektDeltakelse> deltakelser) {
-        this.deltakelser = deltakelser;
-    }
-    @Override
-    public Integer getId() {
-        return id;
-    }
-    public void setId(int prosjId) {
-        this.id = prosjId;
-    }
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @Override
-    public String getEntId() {
-        return "p"+id;
-    }
-
-    public void setNavn(String navn) {
-        this.navn = navn;
-    }
-
+//Equals, hash, getters & setters
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Prosjekt prosjekt = (Prosjekt) o;
-        return id == prosjekt.id;
-    }
-    public String info(){
-        return "ProsjekdId p"+ getId()+", Navn: "+getNavn()+", Beskrivelse: "+getBeskrivelse()+", Antall Medlemmer: "+getDeltakelser().size();
+        return prosjektId == prosjekt.prosjektId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, navn, beskrivelse, deltakelser);
+        return Objects.hash(prosjektId, prosjektNavn, beskrivelse, prosjektDeltakelser);
+    }
+
+    @Override
+    public String toString() {
+        return "Prosjekt{" +
+                "prosjId=" + prosjektId +
+                ", navn='" + prosjektNavn + '\'' +
+                ", beskrivelse='" + beskrivelse + '\'' +
+                '}';
+    }
+
+    public Integer getProsjektId() {
+        return prosjektId;
+    }
+
+    public void setProsjektId(Integer id) {
+        this.prosjektId = id;
+    }
+
+    public String getProsjektNavn() {
+        return prosjektNavn;
+    }
+
+    public void setProsjektNavn(String navn) {
+        this.prosjektNavn = navn;
+    }
+
+    public String getBeskrivelse() {
+        return beskrivelse;
+    }
+
+    public void setBeskrivelse(String beskrivelse) {
+        this.beskrivelse = beskrivelse;
+    }
+
+    public <T extends ProsjektDeltakelse> List<T> getProsjektDeltakelser() {
+        return (List<T>) prosjektDeltakelser;
+    }
+
+    public void setProsjektDeltakelser(List<ProsjektDeltakelse> deltakelser) {
+        this.prosjektDeltakelser = deltakelser;
     }
 }
