@@ -2,15 +2,19 @@ package entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Objects;
+
+import static tekstgrensesnitt.Statics.hoyrePad;
 
 @Entity
 @Table(schema ="Oblig_3")
 public class ProsjektDeltakelse implements asd{
+    //<editor-fold desc="objektvariabler">
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prosjekt_deltakelse_id")
-    private int id;
+    private Integer id;
     @ManyToOne
     @JoinColumn(name = "ans_id", referencedColumnName = "ans_id")
     private Ansatt ansatt;
@@ -19,14 +23,57 @@ public class ProsjektDeltakelse implements asd{
     private Prosjekt prosjekt;
     private String rolle;
     @Column(name = "ant_timer")
-    private int timer;
+    private Integer timer;
+
+    //</editor-fold>
+    //<editor-fold desc="interface metoder">
+    @Override
+    public String getNavn() {
+        return null;
+    }
+
+    @Override
+    public String getEntId() {
+        return null;
+    }
+
     @Override
     public Integer getId() {
         return id;
     }
 
-    public void setId(int prosjDeltId) {
-        this.id = prosjDeltId;
+    @Override
+    public String entiteterMenyInfo() {
+        return null;
+    }
+    @Override
+    public ArrayList<String> administrasjonsMenyInfo(){
+        ArrayList<String> allinfo=new ArrayList<>();
+        allinfo.add("Ansatt "+ ansatt.getNavn()+"(ID:"+ansatt.getEntId()+") Deltar i prosjekt "+prosjekt.getNavn()+"(ID:"+prosjekt.getEntId()+")");
+        allinfo.add("\tRolle:\t"+rolle);
+        allinfo.add("\t#Timer:\t"+timer);
+        return allinfo;
+    }
+    //</editor-fold>
+    //<editor-folding desc="prosjektdeltakelse spesifikke metoder">
+    public String kortInfoProsjekt() {
+        return hoyrePad("ID: "+prosjekt.getEntId(),9)
+                +hoyrePad("Navn: "+prosjekt.getNavn(),30)
+                +hoyrePad("Rolle: "+rolle,30)
+                +hoyrePad("\tTimer: "+timer,0);
+    }
+
+    public String kortInfoAnsatt() {
+        return hoyrePad("ID: "+ansatt.getEntId(),9)
+                +hoyrePad("Navn: "+ansatt.getNavn(),30)
+                +hoyrePad("Rolle: "+rolle,30)
+                +hoyrePad("\tTimer: "+timer,0);
+    }
+    //</editor-folding>
+    //<editor-fold desc="equals, hash, getters & setters">
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Ansatt getAnsatt() {
@@ -53,42 +100,12 @@ public class ProsjektDeltakelse implements asd{
         this.rolle = rolle;
     }
 
-    public int getTimer() {
+    public Integer getTimer() {
         return timer;
     }
 
-    public void setTimer(int timer) {
+    public void setTimer(Integer timer) {
         this.timer = timer;
-    }
-
-    public ProsjektDeltakelse(){}
-
-    public ProsjektDeltakelse(Ansatt ansatt, Prosjekt prosjekt, String rolle, int timer) {
-        this.ansatt = ansatt;
-        this.prosjekt = prosjekt;
-        this.rolle = rolle;
-        this.timer = timer;
-    }
-
-    @Override
-    public String toString() {
-        return "ProsjektDeltakelse{" +
-                "prosjDeltId=" + id +
-                ", ansatt=" + ansatt +
-                ", prosjekt=" + prosjekt +
-                ", rolle='" + rolle + '\'' +
-                ", timer=" + timer +
-                '}';
-    }
-    public String ansattInfo(){
-        return "Brukernavn: "+ansatt.getBrukernavn()+", Navn: '"+ansatt.getFornavn()+" "+ansatt.getEtternavn()+", Rolle: "+getRolle()+", Timer: "+getTimer();
-    }
-
-    public String prosjektInfo() {
-        return "ProsjektId p"+prosjekt.getId()+", Navn"+prosjekt.getNavn()+", Rolle: "+getRolle()+", Timer: "+getTimer();
-    }
-    public String info(){
-        return "Brukernavn: "+ansatt.getBrukernavn()+", Navn: '"+ansatt.getFornavn()+" "+ansatt.getEtternavn()+"', ProsjektId p"+prosjekt.getId()+", Navn"+prosjekt.getNavn()+", Rolle: "+getRolle()+", Timer: "+getTimer();
     }
 
     @Override
@@ -96,21 +113,12 @@ public class ProsjektDeltakelse implements asd{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProsjektDeltakelse that = (ProsjektDeltakelse) o;
-        return id == that.id;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String getNavn() {
-        return "'" +ansatt.getNavn()+"-"+prosjekt.getNavn()+ "'";
-    }
-
-    @Override
-    public String getEntId() {
-        return "pd"+id;
-    }
+    //</editor-fold>
 }

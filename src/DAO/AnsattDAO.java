@@ -2,6 +2,7 @@ package DAO;
 
 import entities.Ansatt;
 import entities.Avdeling;
+import entities.asd;
 import jakarta.persistence.*;
 
 import java.lang.Exception;
@@ -9,127 +10,35 @@ import java.time.LocalDate;
 import java.util.List;
 
 
-public class AnsattDAO implements Dao{
+public class AnsattDAO implements Dao {
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
 
-
-
-
-    public Ansatt finnAnsatt(int ansId) {
+    @Override
+    public <T extends asd> void leggTil(T nyEntitet) {
         EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
 
         try {
-            return em.find(Ansatt.class, ansId);
+            Ansatt ansatt = (Ansatt)nyEntitet;
+
+            tx.begin();
+            Avdeling avd = em.find(Avdeling.class,ansatt.getAvdeling().getId());
+            avd.getAnsatte().add(ansatt);
+            ansatt.setAvdeling(avd);
+            tx.commit();
+            tx.begin();
+            ansatt = em.find(Ansatt.class,ansatt.getId());
+            ansatt.createUserName();
+            tx.commit();
         } catch (Exception e) {
-//            e.printStackTrace();
-            System.out.println("finnAnsatt() feilet");
-            return null;
+            e.printStackTrace();
         } finally {
             em.close();
         }
     }
-    public List<Ansatt> finnAnsatteIkkeSjef(){
-        EntityManager em = emf.createEntityManager();
-        try{
-            TypedQuery<Ansatt> tq = em.createQuery("SELECT ansatte FROM Ansatt ansatte WHERE ansatte.id NOT IN (SELECT avdelinger.sjef.id from Avdeling avdelinger )", Ansatt.class);
-            return tq.getResultList();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-        finally {
-            em.close();
-        }
-    }
-    public void endreFornavn(int ansId, String fornavn){
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
 
-        try{
-            tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setFornavn(fornavn);
-            ansatt.createUserName();
-            tx.commit();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            em.close();
-        }
-    }
-    public void endreEtternavn(int ansId, String etternavn){
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        try{
-            tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setEtternavn(etternavn);
-            ansatt.createUserName();
-            tx.commit();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            em.close();
-        }
-    }
-    public void endreStilling(int ansId, String stilling){
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        try{
-            tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setStilling(stilling);
-            tx.commit();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            em.close();
-        }
-    }
-    public void endreAnsettelsesDato(int ansId, LocalDate nydato){
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        try{
-            tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setAnsDato(nydato);
-            tx.commit();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            em.close();
-        }
-    }
-    public void endreMaanedsLonn(int ansId, Integer lønn){
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-
-        try{
-            tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            ansatt.setMndLonn(lønn);
-            tx.commit();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            em.close();
-        }
-    }
+    @Override
     public List<Ansatt> finnAlle() {
         EntityManager em = emf.createEntityManager();
 
@@ -144,68 +53,85 @@ public class AnsattDAO implements Dao{
             em.close();
         }
     }
-    public Ansatt addAnsatt(Ansatt ansatt, int avdNr){
+
+    @Override
+    public Ansatt finn(int ansId) {
         EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
 
         try {
-            tx.begin();
-            Avdeling avd = em.find(Avdeling.class,avdNr);
-            System.out.println(avdNr);
-            avd.addAnsatt(ansatt);
-            ansatt.setAvdeling(avd);
-            tx.commit();
-            tx.begin();
-            ansatt.createUserName();
-            tx.commit();
-            return ansatt;
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("addAnsatt() feilet");
+            return em.find(Ansatt.class, ansId);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            System.out.println("finnAnsatt() feilet");
             return null;
-        }
-        finally {
+        } finally {
             em.close();
         }
     }
-    public boolean slettAnsatt(int ansId) throws RollbackException{
+
+    public List<Ansatt> finnAnsatteIkkeSjef() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Ansatt> tq = em.createQuery("SELECT ansatte FROM Ansatt ansatte WHERE ansatte.id NOT IN (SELECT avdelinger.sjef.id from Avdeling avdelinger )", Ansatt.class);
+            return tq.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public <T extends asd> void oppdater(T oppdatertEntitet) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
-            em.remove(ansatt);
+            Ansatt ansatt =(Ansatt)oppdatertEntitet;
+            ansatt.createUserName();
+            em.merge(ansatt);
             tx.commit();
-            return true;
-        }
-//        catch (Exception e){
-//            System.out.println(e.getCause().getCause().getClass()) ;
-//            return false;
-//        }
-        finally {
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             em.close();
         }
     }
-    public void flyttAnsatt(int ansId, int avdId){
+
+    public void flyttAnsatt(Ansatt ansatt, Avdeling avdeling) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
         try {
             tx.begin();
-            Ansatt ansatt = em.find(Ansatt.class,ansId);
+            ansatt = em.find(Ansatt.class, ansatt.getId());
             if (ansatt.erSjef())
                 throw new Exception("er sjef, kan ikke flyttes");
-            Avdeling avdeling = em.find(Avdeling.class,avdId);
+            avdeling = em.find(Avdeling.class, avdeling.getId());
             ansatt.getAvdeling().getAnsatte().remove(ansatt);
             avdeling.getAnsatte().add(ansatt);
             ansatt.setAvdeling(avdeling);
             tx.commit();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 
 //            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public <T extends asd> void slett(T entitet) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+            Ansatt ansatt = em.find(Ansatt.class,((Ansatt)entitet).getId());
+            em.remove(ansatt);
+            tx.commit();
         }
         finally {
             em.close();

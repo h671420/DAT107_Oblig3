@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.ArrayList;
+
 public interface asd {
     String getNavn();
 
@@ -7,5 +9,6 @@ public interface asd {
 
     Integer getId();
 
-    String info();
+    String entiteterMenyInfo();
+    ArrayList<String> administrasjonsMenyInfo();
 }

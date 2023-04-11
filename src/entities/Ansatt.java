@@ -1,21 +1,23 @@
 package entities;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import tekstgrensesnitt.Statics;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static tekstgrensesnitt.Statics.hoyrePad;
+
 @Entity
 @Table(schema = "Oblig_3")
 public class Ansatt implements asd{
-
+    //<editor-fold desc="objektvariabler">
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ans_id")
-    private int id;
+    private Integer id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "avd_id", referencedColumnName = "avd_id")
@@ -30,57 +32,92 @@ public class Ansatt implements asd{
     private LocalDate ansDato;
     private String stilling;
     @Column(name="mnd_lonn")
-    Integer mndLønn;
-
-
+    private Integer mndLonn;
+    //</editor-fold>
+    //<editor-fold desc="ansatt spesifikke metoder">
     public boolean erSjef(){
         if (avdeling!=null&&avdeling.getSjef().equals(this))
             return true;
         return false;
     }
+    public void createUserName() {
+        userName= ""+fornavn.toLowerCase().charAt(0)+etternavn.toLowerCase().charAt(0)+ id;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="interface metoder">
+    @Override
+    public String getEntId() {
+        if (getId()==null)
+            return "--";
+        return "an"+getId();
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public String entiteterMenyInfo() {
+        String avdId=avdeling.getEntId();
+        if (getAvdeling().getId()==1)
+            avdId="";
+        String sjef="";
+        if (erSjef())
+            sjef="Avd.leder: ";
+        else sjef="Avdeling:  ";
+        return hoyrePad("ID: "+getEntId(),9)
+                + hoyrePad("Navn: "+getNavn(),25)
+                + hoyrePad(sjef+avdId+" "+getAvdeling().getNavn(),40)
+                + hoyrePad("Stilling: "+getStilling(),35)
+                + hoyrePad("#prosjekter: "+prosjekter.size(),0);
+    }
+    @Override
+    public ArrayList<String> administrasjonsMenyInfo(){
+        ArrayList<String> info=new ArrayList<>();
+        String sjef="";
+        if (erSjef())
+            sjef="/avdelingsleder";
+        info.add("\tDato ansatt:\t"+ansDato);
+        info.add("\tAvdeling:\t"+avdeling.getNavn());
+        info.add("\tStilling:\t"+stilling+sjef);
+        info.add("\t"+"Månedslønn:\t" +"kr."+getMndLonn());
+
+        if (prosjekter.size() == 0)
+            info.add("\nDen ansatte deltar ikke i noen prosjekt");
+        else
+            info.add("\nDen ansatte deltar i følgende prosjekter:");
+        info.add(Statics.deler());
+        for (ProsjektDeltakelse d : prosjekter)
+            info.add("\t" + d.kortInfoProsjekt());
+        if (!prosjekter.isEmpty())
+            info.add(Statics.deler());
+        return info;
+    }
+    @Override
+    public String getNavn() {
+        return getFornavn()+" "+getEtternavn();
+    }
+    //</editor-fold>
+
+    //<editor-fold desc ="equals, hash, getters & setters">
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ansatt ansatt = (Ansatt) o;
-        return id == ansatt.id;
+        return Objects.equals(id, ansatt.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, avdeling);
+        return Objects.hash(id);
     }
 
-    @Override
-    public String toString() {
-        return "Ansatt{" +
-                "ansId=" + id +
-//                ", avdeling=" + avdeling.getNavn() +
-                ", userName='" + userName + '\'' +
-                ", fornavn='" + fornavn + '\'' +
-                ", etternavn='" + etternavn + '\'' +
-                ", ansDato=" + ansDato +
-                ", stilling='" + stilling + '\'' +
-                ", mndLonn=" + mndLønn +
-                '}';
-    }
-
-
-    public Ansatt(String fornavn, String etternavn) {
-        this.fornavn = fornavn;
-        this.etternavn = etternavn;
-    }
-
-    public Ansatt() {
-    }
-
-    public void createUserName() {
-        userName= ""+fornavn.toLowerCase().charAt(0)+etternavn.toLowerCase().charAt(0)+ id;
-    }
-
-    public void setId(int ansId) {
-        this.id = ansId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Avdeling getAvdeling() {
@@ -91,7 +128,15 @@ public class Ansatt implements asd{
         this.avdeling = avdeling;
     }
 
-    public String getBrukernavn() {
+    public List<ProsjektDeltakelse> getProsjekter() {
+        return prosjekter;
+    }
+
+    public void setProsjekter(List<ProsjektDeltakelse> prosjekter) {
+        this.prosjekter = prosjekter;
+    }
+
+    public String getUserName() {
         return userName;
     }
 
@@ -132,42 +177,11 @@ public class Ansatt implements asd{
     }
 
     public Integer getMndLonn() {
-        return mndLønn;
+        return mndLonn;
     }
 
-    public void setMndLonn(int mndLonn) {
-        this.mndLønn = mndLonn;
+    public void setMndLonn(Integer mndLonn) {
+        this.mndLonn = mndLonn;
     }
-
-    public List<ProsjektDeltakelse> getProsjekter() {
-        return prosjekter;
-    }
-
-    public void setProsjekter(List<ProsjektDeltakelse> prosjekter) {
-        this.prosjekter = prosjekter;
-    }
-
-    public String info() {
-        String erSjef="";
-        if (erSjef())
-            erSjef="(leder)";
-        String avdId ="";
-        if (getAvdeling().getId()!=1)
-            avdId ="(Id:a"+getAvdeling().getId()+")";
-        return "\tId: "+getEntId()+", Navn: "+getNavn()+", Stilling: "+getStilling()+", Avdeling"+erSjef+": "+getAvdeling().getNavn()+avdId+", #Prosjektdeltakelser: "+getProsjekter().size()
-                +"\n\t\tMånedslønn: "+ getMndLonn()+", Ansettelsesdato: "+getAnsDato();
-    }
-    @Override
-    public String getNavn(){
-        return fornavn+" "+etternavn;
-    }
-
-    @Override
-    public String getEntId() {
-        return "a"+ id;
-    }
-    @Override
-    public Integer getId(){
-        return id;
-    }
+    //</editor-fold>
 }

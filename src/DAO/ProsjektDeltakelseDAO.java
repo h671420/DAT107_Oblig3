@@ -1,114 +1,79 @@
 package DAO;
 
-import entities.Ansatt;
-import entities.Prosjekt;
-import entities.ProsjektDeltakelse;
+import entities.*;
 import jakarta.persistence.*;
 
 import java.util.List;
 
-public class ProsjektDeltakelseDAO implements Dao{
+public class ProsjektDeltakelseDAO implements Dao {
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Oblig_3");
 
-    public ProsjektDeltakelse finnProsjektDeltakelse(int deltId){
+    @Override
+    public <T extends asd> void leggTil(T nyEntitet) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            ProsjektDeltakelse ny = (ProsjektDeltakelse) nyEntitet;
+            Prosjekt prosjekt=em.find(Prosjekt.class,ny.getProsjekt().getId());
+            Ansatt ansatt = em.find(Ansatt.class,ny.getAnsatt().getId());
+            prosjekt.getDeltakelser().add(ny);
+            ansatt.getProsjekter().add(ny);
+            tx.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ProsjektDeltakelse finn(int id) {
+        EntityManager em = emf.createEntityManager();
+        try{
+            return em.find(ProsjektDeltakelse.class,id);
+        }
+        finally {
+            em.close();
+        }
+    }
+
+    public List<ProsjektDeltakelse> finnAlle() {
         EntityManager em = emf.createEntityManager();
 
-        try{
-            return em.find(ProsjektDeltakelse.class, deltId);
-        }
-        catch (Exception e){
+        try {
+            TypedQuery<ProsjektDeltakelse> tq = em.createQuery("SELECT p from ProsjektDeltakelse p", ProsjektDeltakelse.class);
+            return tq.getResultList();
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
-        finally {
+        } finally {
             em.close();
         }
     }
 
-    public List<ProsjektDeltakelse> finnAlle(){
-            EntityManager em = emf.createEntityManager();
 
-            try{
-                TypedQuery<ProsjektDeltakelse> tq = em.createQuery("SELECT p from ProsjektDeltakelse p", ProsjektDeltakelse.class);
-                return tq.getResultList();
-            }
-            catch (Exception e){
-                e.printStackTrace();
-                return null;
-            }
-            finally {
-                em.close();
-            }
-        }
-        public void addProsjektDeltakelse(int ansId, int prosjId, String rolle, int timer){
-            EntityManager em = emf.createEntityManager();
-            EntityTransaction tx = em.getTransaction();
-            try{
-                tx.begin();
-                Prosjekt prosjekt=em.find(Prosjekt.class,prosjId);
-                Ansatt ansatt = em.find(Ansatt.class,ansId);
-                ProsjektDeltakelse ny = new ProsjektDeltakelse(ansatt,prosjekt,rolle,timer);
-                ansatt.getProsjekter().add(ny);
-                prosjekt.getDeltakelser().add(ny);
-                tx.commit();
+    @Override
+    public <T extends asd> void oppdater(T oppdatertEntitet) {
 
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-            finally {
-                em.close();
-            }
-        }
+    }
 
-    public void slett(Integer prosjektDeltakelseId) {
+    @Override
+    public <T extends asd> void slett(T entitet) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
-        try{
+        try {
             tx.begin();
-            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
+            ProsjektDeltakelse pd = (ProsjektDeltakelse)entitet;
+            pd = em.find(ProsjektDeltakelse.class,pd.getId());
             pd.getAnsatt().getProsjekter().remove(pd);
+            pd.getProsjekt().getDeltakelser().remove(pd);
             em.remove(pd);
             tx.commit();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            em.close();
-        }
-    }
-
-    public void endreRolle(Integer prosjektDeltakelseId, String nyRolle) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try{
-            tx.begin();
-            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
-            pd.setRolle(nyRolle);
-            tx.commit();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            em.close();
-        }
-    }
-
-    public void endreTimer(Integer prosjektDeltakelseId, Integer nyTimer) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try{
-            tx.begin();
-            ProsjektDeltakelse pd = em.find(ProsjektDeltakelse.class,prosjektDeltakelseId);
-            pd.setTimer(nyTimer);
-            tx.commit();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        finally {
+        } finally {
             em.close();
         }
     }

@@ -38,7 +38,7 @@ CREATE TABLE prosjektdeltakelse
     UNIQUE(prosj_id,ans_id)
 );
 INSERT INTO ansatt(avd_id, user_name, fornavn, etternavn) VALUES(1,'init','dummy','ansatt');
-INSERT INTO avdeling(sjef_id,navn) VALUES(1,'init');
+INSERT INTO avdeling(sjef_id,navn) VALUES(1,'Nyansatte');
 ALTER TABLE ansatt ADD FOREIGN KEY(avd_id) REFERENCES avdeling(avd_id);
 
 SELECT * FROM  avdeling;
